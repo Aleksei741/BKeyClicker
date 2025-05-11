@@ -21,6 +21,12 @@
       <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
       <Extensions>ts</Extensions>
     </Filter>
+    <Filter Include="Header Files\CustomWidgets">
+      <UniqueIdentifier>{a5df9a6c-3252-4295-a1c2-dbf99fd5bbfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CustomWidgets">
+      <UniqueIdentifier>{f0c26130-f1ce-4270-bab3-61bbbcc30fa0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -37,10 +43,22 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Definitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MainWindow.h">
       <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="CustomWidgets\ListButtonComboBox.h">
+      <Filter>Header Files\CustomWidgets</Filter>
+    </QtMoc>
+    <QtMoc Include="CustomWidgets\ListWindowComboBox.h">
+      <Filter>Header Files\CustomWidgets</Filter>
+    </QtMoc>
+    <QtMoc Include="CustomWidgets\ConditionalComboBox.h">
+      <Filter>Header Files\CustomWidgets</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
