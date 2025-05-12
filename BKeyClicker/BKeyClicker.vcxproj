@@ -115,6 +115,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <QtMoc Include="ButtonProcedure.h" />
+    <ClInclude Include="USBProcedure.h" />
     <QtMoc Include="CustomWidgets\ListButtonComboBox.h" />
     <QtMoc Include="CustomWidgets\ListWindowComboBox.h" />
     <QtMoc Include="CustomWidgets\ConditionalComboBox.h" />
@@ -124,8 +126,10 @@
     <QtMoc Include="MainWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ButtonProcedure.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="USBProcedure.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="resources.qrc" />
