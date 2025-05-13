@@ -1,16 +1,19 @@
 #include "USBProcedure.h"
 #include <iostream>
 
-// Необходимо подключить эти директивы, чтобы линкер знал, что нужно использовать hid.lib
 #pragma comment(lib, "hid.lib")
 #pragma comment(lib, "setupapi.lib")
+
+static const GUID GUID_DEVINTERFACE_HID =
+{ 0x4d1e55b2, 0xf16f, 0x11cf,
+  { 0x88, 0xcb, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30 } };
 
 HIDManager::HIDManager() :
     m_deviceInfoSet(INVALID_HANDLE_VALUE),
     m_deviceHandle(INVALID_HANDLE_VALUE),
     m_preparsedData(nullptr) 
 {
-    m_attributes.Size = sizeof(HIDD_ATTRIBUTES); // Инициализация размера структуры
+    m_attributes.Size = sizeof(HIDD_ATTRIBUTES);
 }
 
 HIDManager::~HIDManager() 

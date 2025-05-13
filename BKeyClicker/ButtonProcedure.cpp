@@ -1,7 +1,7 @@
 #include "ButtonProcedure.h"
 
 
-ButtonProcedure::ButtonProcedure()
+ButtonProcedure::ButtonProcedure() : m_running(true), m_paused(false)
 {
     
 }
@@ -20,35 +20,37 @@ void ButtonProcedure::process()
         m_mutex.lock();
         while (m_paused) 
         {
-            qDebug() << "Поток приостановлен.";
-            m_waitCondition.wait(&m_mutex); // Освобождает мьютекс и ждет сигнала
-            qDebug() << "Поток возобновлен.";
+            qDebug() << "ButtonProcedure ";
+            m_waitCondition.wait(&m_mutex);
+            qDebug() << "пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.";
         }
         m_mutex.unlock();
 
-        // ... Выполняем какую-то работу ...
         qDebug() << "Working...";
         QThread::msleep(10);
     }
 
-    qDebug() << "Worker::process() завершен.";
+    qDebug() << "Worker::process() пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.";
     emit finished();
 }
 
-void ButtonProcedure::stop() {
+void ButtonProcedure::stop() 
+{
     m_mutex.lock();
     m_running = false;
-    m_waitCondition.wakeAll(); // Разбудить поток, если он ждет
+    m_waitCondition.wakeAll();
     m_mutex.unlock();
 }
 
-void ButtonProcedure::pause() {
-    QMutexLocker locker(&m_mutex); // Автоматически блокирует мьютекс
+void ButtonProcedure::pause() 
+{
+    QMutexLocker locker(&m_mutex);
     m_paused = true;
 }
 
-void ButtonProcedure::resume() {
-    QMutexLocker locker(&m_mutex); // Автоматически блокирует мьютекс
+void ButtonProcedure::resume() 
+{
+    QMutexLocker locker(&m_mutex);
     m_paused = false;
-    m_waitCondition.wakeAll(); // Разбудить поток
+    m_waitCondition.wakeAll();
 }

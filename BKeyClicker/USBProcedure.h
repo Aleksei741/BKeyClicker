@@ -1,8 +1,9 @@
 #pragma once
-// Заголовочные файлы Windows API
+
 #include <windows.h>
-#include <hidsdi.h>
 #include <setupapi.h>
+#include <hidsdi.h>
+
 #include <string>
 #include <vector>
 
@@ -12,7 +13,7 @@ public:
     ~HIDManager();
 
     bool initialize();
-    std::vector<std::wstring> getDevicePaths(); // Возвращает вектор путей к устройствам
+    std::vector<std::wstring> getDevicePaths(); 
     bool openDevice(const std::wstring& devicePath);
     void closeDevice();
 

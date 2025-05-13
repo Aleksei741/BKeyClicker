@@ -1,4 +1,7 @@
 #pragma once
+#include <QThread>
+#include <QMutex>
+#include <QWaitCondition>
 #include <QApplication>
 
 class ButtonProcedure : public QObject 
@@ -11,12 +14,12 @@ public:
 
 public slots:
     void process();
-
-signals:
-    void finished();
     void stop();
     void pause();
     void resume();
+
+signals:
+    void finished();    
     void error(QString err);
 
 private:
