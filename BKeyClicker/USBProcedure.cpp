@@ -4,10 +4,6 @@
 #pragma comment(lib, "hid.lib")
 #pragma comment(lib, "setupapi.lib")
 
-static const GUID GUID_DEVINTERFACE_HID =
-{ 0x4d1e55b2, 0xf16f, 0x11cf,
-  { 0x88, 0xcb, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30 } };
-
 HIDManager::HIDManager() :
     m_deviceInfoSet(INVALID_HANDLE_VALUE),
     m_deviceHandle(INVALID_HANDLE_VALUE),
@@ -28,9 +24,15 @@ HIDManager::~HIDManager()
 
 bool HIDManager::initialize() 
 {
-    GUID hidGuid;
+    
     HidD_GetHidGuid(&hidGuid);
 
+    printf("HidGuid = {%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX}\n",
+        hidGuid.Data1, hidGuid.Data2, hidGuid.Data3,
+        hidGuid.Data4[0], hidGuid.Data4[1], hidGuid.Data4[2], hidGuid.Data4[3],
+        hidGuid.Data4[4], hidGuid.Data4[5], hidGuid.Data4[6], hidGuid.Data4[7]);
+
+    // Retrieve a list of all present USB devices with a device interface.
     m_deviceInfoSet = SetupDiGetClassDevs(&hidGuid, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
 
     if (m_deviceInfoSet == INVALID_HANDLE_VALUE) 
@@ -54,7 +56,7 @@ std::vector<std::wstring> HIDManager::getDevicePaths()
         return devicePaths; // Return empty vector
     }
 
-    for (DWORD i = 0; SetupDiEnumDeviceInterfaces(m_deviceInfoSet, NULL, &GUID_DEVINTERFACE_HID, i, &deviceInterfaceData); ++i) 
+    for (DWORD i = 0; SetupDiEnumDeviceInterfaces(m_deviceInfoSet, NULL, &hidGuid, i, &deviceInterfaceData); ++i)
     {
         DWORD requiredSize = 0;
         SetupDiGetDeviceInterfaceDetail(m_deviceInfoSet, &deviceInterfaceData, NULL, 0, &requiredSize, NULL);

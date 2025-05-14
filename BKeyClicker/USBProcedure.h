@@ -26,6 +26,7 @@ public:
     unsigned short getOutputReportByteLength();
 
 private:
+    GUID hidGuid;
     HDEVINFO m_deviceInfoSet;
     HANDLE m_deviceHandle;
     HIDD_ATTRIBUTES m_attributes;
