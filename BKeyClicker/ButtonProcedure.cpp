@@ -13,16 +13,16 @@ ButtonProcedure::~ButtonProcedure()
 
 void ButtonProcedure::process()
 {
-    qDebug() << "ButtonProcedure start process: " << QThread::currentThreadId();
+    qDebug() << "ButtonProcedure process start: " << QThread::currentThreadId();
 
     while (m_running) 
     {
         m_mutex.lock();
         while (m_paused) 
         {
-            qDebug() << "ButtonProcedure ";
+            qDebug() << "ButtonProcedure process pause";
             m_waitCondition.wait(&m_mutex);
-            qDebug() << "����� �����������.";
+            qDebug() << "ButtonProcedure process begine";
         }
         m_mutex.unlock();
 
@@ -30,7 +30,7 @@ void ButtonProcedure::process()
         QThread::msleep(10);
     }
 
-    qDebug() << "Worker::process() ��������.";
+    qDebug() << "ButtonProcedure process stop.";
     emit finished();
 }
 
