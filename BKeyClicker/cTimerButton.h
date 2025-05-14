@@ -8,9 +8,9 @@
 class IKeyEmulator
 {
 public:
-	bool ClickKey(quint16 indexKey, bool flagShift, bool flagAlt, bool flagCtrl) = 0;
-	bool PressKey(quint16 indexKey, bool flagShift, bool flagAlt, bool flagCtrl) = 0;
-	bool UnpressKey(void) = 0;
+	virtual bool ClickKey(quint16 indexKey, bool flagShift, bool flagAlt, bool flagCtrl) = 0;
+	virtual bool PressKey(quint16 indexKey, bool flagShift, bool flagAlt, bool flagCtrl) = 0;
+	virtual bool UnpressKey(void) = 0;
 };
 
 class cTimerButton
@@ -18,7 +18,6 @@ class cTimerButton
 	mutable unsigned int click_cnt = 0;
 	mutable QReadWriteLock RWLock;
 	static IKeyEmulator* emulator;
-	mutable unsigned int click_cnt = 0;
 	mutable QElapsedTimer timer;
 
 protected:
@@ -34,9 +33,9 @@ protected:
 public:
 	cTimerButton();
 	cTimerButton(quint16 button, quint32 period, quint32 pause, bool shift, bool alt, bool ctrl);
-	~cTimerButton() = default();
+	~cTimerButton() = default;
 	cTimerButton(const cTimerButton& button) = default;
-	cTimerButton& operator= (const cTimerButton& button) = default();
+	cTimerButton& operator= (const cTimerButton& button) = default;
 
 	QPair<quint32, bool> click() const;
 

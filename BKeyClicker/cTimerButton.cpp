@@ -8,7 +8,7 @@
 //------------------------------------------------------------------------------
 // Global
 //------------------------------------------------------------------------------
-cTimerButton::emulator = nullptr;
+IKeyEmulator* cTimerButton::emulator = nullptr;
 
 //------------------------------------------------------------------------------
 // Local
@@ -76,7 +76,7 @@ QPair<quint32, bool> cTimerButton::click() const
 	else
 		Final = true;
 
-	RWLock.unlockForRead();
+	RWLock.unlock();
 	
 	return { delay, Final };
 }
@@ -85,55 +85,55 @@ void cTimerButton::setActive(bool state)
 {
 	RWLock.lockForWrite();
 	f_activate = state;
-	RWLock.unlockForWrite();
+	RWLock.unlock();
 }
 //------------------------------------------------------------------------------
 void cTimerButton::setCtrl(bool state)
 {
 	RWLock.lockForWrite();
 	f_ctrl = state;
-	RWLock.unlockForWrite();
+	RWLock.unlock();
 }
 //------------------------------------------------------------------------------
 void cTimerButton::setAlt(bool state)
 {
 	RWLock.lockForWrite();
 	f_alt = state;
-	RWLock.unlockForWrite();
+	RWLock.unlock();
 }
 //------------------------------------------------------------------------------
 void cTimerButton::setShift(bool state) 
 {
 	RWLock.lockForWrite();
 	f_shift = state;
-	RWLock.unlockForWrite();
+	RWLock.unlock();
 }
 //------------------------------------------------------------------------------
 void cTimerButton::setIndexButton(quint16 index)
 {
 	RWLock.lockForWrite();
 	m_button = index;
-	RWLock.unlockForWrite();
+	RWLock.unlock();
 }
 //------------------------------------------------------------------------------
 void cTimerButton::setPeriod(quint32 period)
 {
 	RWLock.lockForWrite();
 	m_period = period;
-	RWLock.unlockForWrite();
+	RWLock.unlock();
 }
 //------------------------------------------------------------------------------
 void cTimerButton::setRepeat(quint16 repeate)
 {
 	RWLock.lockForWrite();
 	m_repeat = repeate;
-	RWLock.unlockForWrite();
+	RWLock.unlock();
 }
 //------------------------------------------------------------------------------
 void cTimerButton::setPause(quint32 pause)
 {
 	RWLock.lockForWrite();
 	m_pause = pause;
-	RWLock.unlockForWrite();
+	RWLock.unlock();
 }
 //------------------------------------------------------------------------------

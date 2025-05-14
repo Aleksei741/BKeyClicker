@@ -26,8 +26,8 @@ void ButtonProcedure::process()
         }
         m_mutex.unlock();
 
-        qDebug() << "Working...";
-        QThread::msleep(10);
+        qDebug() << "ButtonProcedure Working...";
+        QThread::msleep(1000);
     }
 
     qDebug() << "ButtonProcedure process stop.";

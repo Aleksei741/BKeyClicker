@@ -1,5 +1,6 @@
 #pragma once
-
+#include <QObject>
+#include "ButtonProcedure.h"
 #include "MainWindow.h"
 
 struct ButtonFTimer_DType
