@@ -115,8 +115,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="USB\USBDataReader.h" />
+    <ClInclude Include="USB\USBDataWriter.h" />
     <QtMoc Include="ButtonProcedure.h" />
-    <ClInclude Include="cTimerButton.h" />
+    <ClInclude Include="ControlledEntities\cTimerButton.h" />
     <ClInclude Include="USBProcedure.h" />
     <QtMoc Include="CustomWidgets\ListButtonComboBox.h" />
     <QtMoc Include="CustomWidgets\ListWindowComboBox.h" />
@@ -128,10 +130,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ButtonProcedure.cpp" />
-    <ClCompile Include="cTimerButton.cpp" />
+    <ClCompile Include="ControlledEntities\cTimerButton.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="USBDataWriter.cpp" />
     <ClCompile Include="USBProcedure.cpp" />
+    <ClCompile Include="USB\USBDataReader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="resources.qrc" />

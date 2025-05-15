@@ -26,12 +26,16 @@ public:
     unsigned short getOutputReportByteLength();
 
 private:
+    HDEVINFO hDevInfoSet;
+    SP_DEVINFO_DATA devInfoData;
+    SP_DEVICE_INTERFACE_DATA devIfcData;
+    PSP_DEVICE_INTERFACE_DETAIL_DATA devIfcDetailData;
+    HANDLE hHidDeviceObject;
+
     GUID hidGuid;
-    HDEVINFO m_deviceInfoSet;
-    HANDLE m_deviceHandle;
-    HIDD_ATTRIBUTES m_attributes;
-    HIDP_CAPS m_capabilities;
-    PHIDP_PREPARSED_DATA m_preparsedData;
+
+    std::string _vid = "vid_10c4";
+    std::string _pid = "pid_82cd";
 
     bool getDeviceCapabilities(const std::wstring& devicePath);
 };

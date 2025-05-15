@@ -27,6 +27,18 @@
     <Filter Include="Source Files\CustomWidgets">
       <UniqueIdentifier>{f0c26130-f1ce-4270-bab3-61bbbcc30fa0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ControlledEntities">
+      <UniqueIdentifier>{7eea3475-999b-45d1-bcb7-b1f3a7c1e23a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ControlledEntities">
+      <UniqueIdentifier>{1dbd7448-97da-458e-9046-57c4eb7d21a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\USB">
+      <UniqueIdentifier>{f2256e29-37ff-470e-8ca9-1b2aab36ce82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\USB">
+      <UniqueIdentifier>{72c0b368-7840-4ffd-9659-3882e60d5ada}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -41,7 +53,13 @@
     <ClCompile Include="ButtonProcedure.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cTimerButton.cpp">
+    <ClCompile Include="ControlledEntities\cTimerButton.cpp">
+      <Filter>Source Files\ControlledEntities</Filter>
+    </ClCompile>
+    <ClCompile Include="USB\USBDataReader.cpp">
+      <Filter>Source Files\USB</Filter>
+    </ClCompile>
+    <ClCompile Include="USBDataWriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -58,7 +76,13 @@
     <ClInclude Include="USBProcedure.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cTimerButton.h">
+    <ClInclude Include="ControlledEntities\cTimerButton.h">
+      <Filter>Header Files\ControlledEntities</Filter>
+    </ClInclude>
+    <ClInclude Include="USB\USBDataReader.h">
+      <Filter>Header Files\USB</Filter>
+    </ClInclude>
+    <ClInclude Include="USB\USBDataWriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
