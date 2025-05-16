@@ -4,47 +4,78 @@
 #pragma comment(lib, "hid.lib")
 #pragma comment(lib, "setupapi.lib")
 
-HIDManager::HIDManager() :
-    m_deviceInfoSet(INVALID_HANDLE_VALUE),
-    m_deviceHandle(INVALID_HANDLE_VALUE),
-    m_preparsedData(nullptr) 
-{
-    m_attributes.Size = sizeof(HIDD_ATTRIBUTES);
-}
-
-HIDManager::~HIDManager() 
-{
-    closeDevice();
-
-    if (m_deviceInfoSet != INVALID_HANDLE_VALUE) 
-    {
-        SetupDiDestroyDeviceInfoList(m_deviceInfoSet);
-    }
-}
-
-bool HIDManager::initialize() 
+USBProcedure::USBProcedure()
 {
     
+}
+
+USBProcedure::~USBProcedure() 
+{
+
+}
+
+bool USBProcedure::initialize() 
+{    
     HidD_GetHidGuid(&hidGuid);
 
-    printf("HidGuid = {%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX}\n",
-        hidGuid.Data1, hidGuid.Data2, hidGuid.Data3,
-        hidGuid.Data4[0], hidGuid.Data4[1], hidGuid.Data4[2], hidGuid.Data4[3],
-        hidGuid.Data4[4], hidGuid.Data4[5], hidGuid.Data4[6], hidGuid.Data4[7]);
-
-    // Retrieve a list of all present USB devices with a device interface.
-    m_deviceInfoSet = SetupDiGetClassDevs(&hidGuid, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
-
-    if (m_deviceInfoSet == INVALID_HANDLE_VALUE) 
-    {
-        std::cerr << "SetupDiGetClassDevs failed" << std::endl;
-        return false;
-    }
+    qDebug() << "USBProcedure HidGuid: " << hidGuid.Data1 << " " << hidGuid.Data2 << " " << hidGuid.Data3 << " "
+        << hidGuid.Data4[0] << " " << hidGuid.Data4[1] << " " << hidGuid.Data4[2] << " " << hidGuid.Data4[3] << " "
+        << hidGuid.Data4[4] << " " << hidGuid.Data4[5] << " " << hidGuid.Data4[6] << " " << hidGuid.Data4[7];
 
     return true;
 }
 
-std::vector<std::wstring> HIDManager::getDevicePaths() 
+bool USBProcedure::EnumUsbDevice()
+{
+    bool status = false;
+    quint16 rLength = 0;
+    quint16 i = 0;
+
+    hDevInfo = SetupDiGetClassDevs(&hidGuid, NULL, 0, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+
+    if (hDevInfo != INVALID_HANDLE_VALUE)
+    {
+        dInf.cbSize = sizeof(SP_DEVINFO_DATA);
+        dIntDat.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
+        
+        while (SetupDiEnumDeviceInterfaces(hDevInfo, 0, &hidGuid, i, &dIntDat))
+        {
+            SetupDiGetDeviceInterfaceDetail(hDevInfo, &dIntDat, 0, 0, &rLength, 0);
+            if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) 
+            {
+                qDebug() << "USBProcedure Handle error";
+                break;
+            }
+
+            QVector<quint8> buffer(rLength);
+            dIntDet = reinterpret_cast<PSP_DEVICE_INTERFACE_DETAIL_DATA*>(buffer.data());
+            dIntDet->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
+
+            if (!SetupDiGetDeviceInterfaceDetail(hDevInfo, &dIntDat, dIntDet, rLength, &rLength, 0))
+            {
+                qDebug() << "USBProcedure Handle error 2";
+                break;
+            }
+
+            devicePath_ = QString::fromWCharArray(dIntDet->DevicePath, wcslen(dIntDet->DevicePath));
+
+            if (!flg)
+            {
+                if (connecthid(devpath)) //пробуем соединиться.
+                {
+                    status = TRUE; //если успешно
+                    break;
+                }
+            }
+            i++;
+        }
+        SetupDiDestroyDeviceInfoList(hDevInfo);
+    }
+
+    return status;
+}
+
+std::vector<std::wstring> USBProcedure::getDevicePaths() 
 {
     std::vector<std::wstring> devicePaths;
     SP_DEVICE_INTERFACE_DATA deviceInterfaceData;
@@ -82,7 +113,7 @@ std::vector<std::wstring> HIDManager::getDevicePaths()
     return devicePaths;
 }
 
-bool HIDManager::openDevice(const std::wstring& devicePath) 
+bool USBProcedure::openDevice(const std::wstring& devicePath) 
 {
     m_deviceHandle = CreateFileW(
         devicePath.c_str(),
@@ -103,7 +134,7 @@ bool HIDManager::openDevice(const std::wstring& devicePath)
     return getDeviceCapabilities(devicePath);
 }
 
-void HIDManager::closeDevice() 
+void USBProcedure::closeDevice() 
 {
     if (m_deviceHandle != INVALID_HANDLE_VALUE) 
     {
@@ -118,7 +149,7 @@ void HIDManager::closeDevice()
     }
 }
 
-bool HIDManager::readData(unsigned char* buffer, DWORD bufferSize, DWORD& bytesRead) 
+bool USBProcedure::readData(unsigned char* buffer, DWORD bufferSize, DWORD& bytesRead) 
 {
     if (m_deviceHandle == INVALID_HANDLE_VALUE) 
     {
@@ -135,7 +166,7 @@ bool HIDManager::readData(unsigned char* buffer, DWORD bufferSize, DWORD& bytesR
     return true;
 }
 
-bool HIDManager::writeData(unsigned char* buffer, DWORD bufferSize) 
+bool USBProcedure::writeData(unsigned char* buffer, DWORD bufferSize) 
 {
     if (m_deviceHandle == INVALID_HANDLE_VALUE) 
     {
@@ -153,27 +184,27 @@ bool HIDManager::writeData(unsigned char* buffer, DWORD bufferSize)
     return true;
 }
 
-unsigned short HIDManager::getVendorID() 
+unsigned short USBProcedure::getVendorID() 
 {
     return m_attributes.VendorID;
 }
 
-unsigned short HIDManager::getProductID()
+unsigned short USBProcedure::getProductID()
 {
     return m_attributes.ProductID;
 }
 
-unsigned short HIDManager::getInputReportByteLength()
+unsigned short USBProcedure::getInputReportByteLength()
 {
     return m_capabilities.InputReportByteLength;
 }
 
-unsigned short HIDManager::getOutputReportByteLength() 
+unsigned short USBProcedure::getOutputReportByteLength() 
 {
     return m_capabilities.OutputReportByteLength;
 }
 
-bool HIDManager::getDeviceCapabilities(const std::wstring& devicePath) 
+bool USBProcedure::getDeviceCapabilities(const std::wstring& devicePath) 
 {
     if (!HidD_GetAttributes(m_deviceHandle, &m_attributes)) 
     {

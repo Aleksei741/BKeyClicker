@@ -47,9 +47,6 @@
     <ClCompile Include="MainWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="USBProcedure.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ButtonProcedure.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -59,8 +56,11 @@
     <ClCompile Include="USB\USBDataReader.cpp">
       <Filter>Source Files\USB</Filter>
     </ClCompile>
-    <ClCompile Include="USBDataWriter.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="USB\USBDataWriter.cpp">
+      <Filter>Source Files\USB</Filter>
+    </ClCompile>
+    <ClCompile Include="USB\USBProcedure.cpp">
+      <Filter>Source Files\USB</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,9 +73,6 @@
     <ClInclude Include="Definitions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="USBProcedure.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ControlledEntities\cTimerButton.h">
       <Filter>Header Files\ControlledEntities</Filter>
     </ClInclude>
@@ -83,7 +80,10 @@
       <Filter>Header Files\USB</Filter>
     </ClInclude>
     <ClInclude Include="USB\USBDataWriter.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\USB</Filter>
+    </ClInclude>
+    <ClInclude Include="USB\USBProcedure.h">
+      <Filter>Header Files\USB</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

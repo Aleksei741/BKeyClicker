@@ -117,9 +117,9 @@
   <ItemGroup>
     <ClInclude Include="USB\USBDataReader.h" />
     <ClInclude Include="USB\USBDataWriter.h" />
+    <ClInclude Include="USB\USBProcedure.h" />
     <QtMoc Include="ButtonProcedure.h" />
     <ClInclude Include="ControlledEntities\cTimerButton.h" />
-    <ClInclude Include="USBProcedure.h" />
     <QtMoc Include="CustomWidgets\ListButtonComboBox.h" />
     <QtMoc Include="CustomWidgets\ListWindowComboBox.h" />
     <QtMoc Include="CustomWidgets\ConditionalComboBox.h" />
@@ -133,9 +133,9 @@
     <ClCompile Include="ControlledEntities\cTimerButton.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
-    <ClCompile Include="USBDataWriter.cpp" />
-    <ClCompile Include="USBProcedure.cpp" />
     <ClCompile Include="USB\USBDataReader.cpp" />
+    <ClCompile Include="USB\USBDataWriter.cpp" />
+    <ClCompile Include="USB\USBProcedure.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="resources.qrc" />
