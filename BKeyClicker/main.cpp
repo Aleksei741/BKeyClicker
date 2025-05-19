@@ -4,6 +4,15 @@ int main(int argc, char* argv[])
 {
 	QApplication app(argc, argv);
 
+    QThread* threadUSBProcess = new QThread;
+    USBProcedure* USBProcess = new USBProcedure();
+    USBProcess->moveToThread(threadUSBProcess);
+    QObject::connect(threadUSBProcess, &QThread::started, USBProcess, &USBProcedure::process);
+    QObject::connect(USBProcess, &USBProcedure::finished, threadUSBProcess, &QThread::quit);
+    QObject::connect(USBProcess, &USBProcedure::finished, USBProcess, &USBProcedure::deleteLater);
+    QObject::connect(threadUSBProcess, &QThread::finished, threadUSBProcess, &QThread::deleteLater);
+    threadUSBProcess->start();
+
     QThread* threadButtonProcess = new QThread;
     ButtonProcedure* buttonProcess = new ButtonProcedure();
     buttonProcess->moveToThread(threadButtonProcess);
@@ -18,6 +27,7 @@ int main(int argc, char* argv[])
     threadButtonProcess->start();
 
 	MainWindow window(10, 10);
+    QObject::connect(USBProcess, &USBProcedure::GUISetStatusConection, MainWindow, &MainWindow::handleStatusConnection);
 		
 	window.show();
 	return app.exec();

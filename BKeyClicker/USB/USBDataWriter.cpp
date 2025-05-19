@@ -1,26 +1,76 @@
 #include "USBDataWriter.h"
 
-USBDataWriter::USBDataWriter(HANDLE fileID, QMutex* mutex, QWaitCondition* dataReady)
-    : fileID_(fileID), mutex_(mutex), dataReady_(dataReady) 
+USBDataWriter::USBDataWriter(HANDLE* hDev_)
+    : hDev(hDev_)
 {
+    setAutoDelete(true);
 
+    oWrite.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    if (oWrite.hEvent == NULL)
+    {
+        qDebug() << "USBDataWriter CreateEvent failed: " << GetLastError();
+        throw std::runtime_error("USBDataWriter CreateEvent failed");
+    }
 }
-
-void USBDataWriter::run() override
+//------------------------------------------------------------------------------
+USBDataWriter::~USBDataWriter()
 {
-    while (true) {
-        mutex_->lock();
-        dataReady_->wait(mutex_);  // Wait for data to be available
-        QByteArray data = dataToWrite;  // Get data to write
-        mutex_->unlock();
+    CloseHandle(oWrite.hEvent);   
+}
+//------------------------------------------------------------------------------
+bool USBDataWriter::write(QByteArray data)
+{
+    QMutexLocker(mutexWrite);
+    dataToWrite.enqueue(data);
+    cvWrite.wakeOne();
 
-        if (data.isEmpty()) break;  // Check for stop condition
+    return true;
+}
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+// slots
+//------------------------------------------------------------------------------
+void USBDataWriter::process()
+{
+    QByteArray data;
+    DWORD bytesWritten;
+    BOOL ret;
 
-        DWORD bytesWritten;
-        BOOL success = WriteFile(fileID_, data.data(), data.size(), &bytesWritten, NULL);
-        if (!success) {
-            qDebug() << "USBDataWriter WriteFile failed:" << GetLastError();
-            break;
+    while (active)
+    {
+        {
+            QMutexLocker(mutexWrite);
+
+            if(dataToWrite.isEmpty())
+                cvWrite.wait(&mutexWrite);
+            
+            data = dataToWrite.dequeue();
+        }
+               
+        ret = WriteFile(*hDev, data.data(), data.size(), &bytesWritten, &oWrite);
+
+        if (!ret)
+        {
+            DWORD err = GetLastError();
+            qDebug() << "USBDataWriter WriteFile failed. Error:" << err;
+            emit writeError();
+        }
+        else if (bytesWritten != static_cast<DWORD>(data.size()))
+        {
+            qDebug() << "USBDataWriter: Not all bytes written. Expected:"
+                << data.size() << ", Actual:" << bytesWritten;
+            emit writeError();
+        }
+        else
+        {
+            qDebug() << "USBDataWriter: Successfully written" << bytesWritten << "bytes";            
         }
     }
 }
+//------------------------------------------------------------------------------
+void USBDataWriter::stop()
+{
+    active = false;
+}
+//------------------------------------------------------------------------------

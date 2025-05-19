@@ -76,6 +76,7 @@ signals:
 	void clickButtonSetPixel(int rowIndex);
 
 private slots:
+	void handleStatusConnection(bool status);
 
 private:
 
@@ -84,4 +85,7 @@ private:
 
 	QFrame* createWidgetsTimers();
 	QFrame* createWidgetsPixel();
+
+	QLabel* imageUSBLabel;
+	QLabel* imageEthernetLabel;
 };

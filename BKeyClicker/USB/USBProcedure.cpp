@@ -6,16 +6,44 @@
 
 USBProcedure::USBProcedure()
 {
-    
-}
+    setAutoDelete(true);
 
+    initialize();
+
+    //
+    threadWrite = new QThread;
+    writer = new USBDataWriter(&hDev);
+    QObject::connect(writer, &USBDataWriter::writeError, this, handleWriteError);
+    writer->moveToThread(threadWrite);
+    QObject::connect(threadWrite, &QThread::started, writer, &USBDataWriter::process);
+    QObject::connect(writer, &USBDataWriter::finished, threadWrite, &QThread::quit);
+    QObject::connect(writer, &USBDataWriter::finished, writer, &USBDataWriter::deleteLater);
+    QObject::connect(threadWrite, &QThread::finished, threadWrite, &QThread::deleteLater);
+    threadWrite->start();
+
+    threadReade = new QThread;
+    reader = new USBDataWriter(&hDev);
+    reader->moveToThread(threadReade);
+    QObject::connect(threadReade, &QThread::started, reader, &USBDataReader::process);
+    QObject::connect(reader, &USBDataReader::finished, threadReade, &QThread::quit);
+    QObject::connect(reader, &USBDataReader::finished, reader, &USBDataReader::deleteLater);
+    QObject::connect(threadReade, &QThread::finished, threadReade, &QThread::deleteLater);
+    threadReade->start();
+}
+//------------------------------------------------------------------------------
 USBProcedure::~USBProcedure() 
 {
-    if (fileID != INVALID_HANDLE_VALUE) 
-    {
-        CloseHandle(fileID);
-    }
+    writer->stop();
+    threadWrite->quit();
+    threadWrite->wait();
+
+    reader->stop();
+    threadReade->quit();
+    threadReade->wait();
+
+    closeDevice();
 }
+//------------------------------------------------------------------------------
 
 bool USBProcedure::initialize() 
 {    
@@ -27,12 +55,13 @@ bool USBProcedure::initialize()
 
     return true;
 }
-
-bool USBProcedure::EnumUsbDevice()
+//------------------------------------------------------------------------------
+std::options<QString> USBProcedure::SearchUsbDevice()
 {
-    bool status = false;
+    std::options<QString> status = std::nullopt;
     unsigned long rLength = 0;
     quint16 i = 0;
+    QString& devicePath_;
 
     hDevInfo = SetupDiGetClassDevs(&hidGuid, nullptr, 0, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
 
@@ -60,15 +89,15 @@ bool USBProcedure::EnumUsbDevice()
                 break;
             }
 
-            devicePath_ = QString::fromWCharArray(dIntDet->DevicePath, wcslen(dIntDet->DevicePath));
+            DevicePath_ = QString::fromWCharArray(dIntDet->DevicePath, wcslen(dIntDet->DevicePath));
             free(dIntDet);
 
-            qDebug() << "USBProcedure devicePath: " << devicePath_;
+            qDebug() << "USBProcedure devicePath: " << DevicePath_;
 
-            if (isTargetDevice(devicePath_))
+            if (isTargetDevice(DevicePath_))
             {
                 qDebug() << "USBProcedure search finish";
-                status = TRUE;
+                status = DevicePath_;
                 break;
             }
             i++;
@@ -78,7 +107,7 @@ bool USBProcedure::EnumUsbDevice()
 
     return status;
 }
-
+//------------------------------------------------------------------------------
 bool USBProcedure::isTargetDevice(const QString& hidPath)
 {
     if (hidPath.contains(_vid))
@@ -87,12 +116,12 @@ bool USBProcedure::isTargetDevice(const QString& hidPath)
 
     return false;
 }
-
+//------------------------------------------------------------------------------
 bool USBProcedure::openDevice(const QString& devicePath)
 {
     std::wstring wPath = devicePath.toStdWString();
 
-    fileID = CreateFile(
+    hDev = CreateFile(
         wPath.c_str(),
         GENERIC_READ | GENERIC_WRITE,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
@@ -102,75 +131,82 @@ bool USBProcedure::openDevice(const QString& devicePath)
         NULL
     );
 
-    if (fileID != INVALID_HANDLE_VALUE)
+    if (hDev != INVALID_HANDLE_VALUE)
     {
-        status = TRUE;
-        //Открываем поток на чтение. Он работает постоянно до закрытия
-        //сеанса связи
-        killRead = 0;
-        reader = CreateThread(NULL, 0, ReadThread, NULL, CREATE_ALWAYS, NULL);
-        //создаем поток записи в приостановленном состоянии.
-        writer = CreateThread(NULL, 0, WriteThread, NULL, CREATE_SUSPENDED, NULL);
-        //Отчитываемся об успешном подключении и т.д.
-        flg = TRUE;
-        //disconhid(); // на всяки случай отключаем "не то" устройство
-        //если оно вдруг открылось с CreateFile
+        StatusConection = true;
+    }
+    else
+    {
+        qDebug() << "USBProcedure CreateFile INVALID_HANDLE_VALUE";
     }
 
     return getDeviceCapabilities(devicePath);
 }
-
-void USBProcedure::closeDevice() 
+//------------------------------------------------------------------------------
+void USBProcedure::closeDevice(HANDLE& hDev_)
 {
-    if (m_deviceHandle != INVALID_HANDLE_VALUE) 
+    if(hDev_ && hDev_ != INVALID_HANDLE_VALUE)
+        CloseHandle(hDev_);
+    hDev_ = nullptr;
+}
+//------------------------------------------------------------------------------
+QByteArray USBProcedure::readData()
+{
+    QMutexLocker(mutexReade);
+    return ReadeData;
+}
+//------------------------------------------------------------------------------
+bool USBProcedure::writeData(QByteArray& data)
+{
+    bool ret;
+    ret = writer->write(data);
+    return ret;
+}
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+// slots
+//------------------------------------------------------------------------------
+void USBProcedure::process()
+{
+    while (active)
     {
-        CloseHandle(m_deviceHandle);
-        m_deviceHandle = INVALID_HANDLE_VALUE;
-    }
+        if (!StatusConection)
+        {
+            closeDevice(hDev);
+            DevicePath = SearchUsbDevice();
+            if (DevicePath)
+            {
+                openDevice(DevicePath);
+            }
+        }
 
-    if (m_preparsedData) 
-    {
-        HidD_FreePreparsedData(m_preparsedData);
-        m_preparsedData = nullptr;
+        emit GUISetStatusConection(static_cast<bool>(StatusConection));
+
+        QThread::sleep(std::chrono::milliseconds{ 1000 });
     }
 }
-
-bool USBProcedure::readData(unsigned char* buffer, DWORD bufferSize, DWORD& bytesRead) 
+//------------------------------------------------------------------------------
+void USBProcedure::stop()
 {
-    if (m_deviceHandle == INVALID_HANDLE_VALUE) 
-    {
-        std::cerr << "Device not open" << std::endl;
-        return false;
-    }
-
-    if (!ReadFile(m_deviceHandle, buffer, bufferSize, &bytesRead, NULL)) 
-    {
-        std::cerr << "ReadFile failed" << std::endl;
-        return false;
-    }
-
-    return true;
+    active = false;
 }
-
-bool USBProcedure::writeData(unsigned char* buffer, DWORD bufferSize) 
+//------------------------------------------------------------------------------
+void  USBProcedure::handleWriteError()
 {
-    if (m_deviceHandle == INVALID_HANDLE_VALUE) 
-    {
-        std::cerr << "Device not open" << std::endl;
-        return false;
-    }
-
-    DWORD bytesWritten;
-    if (!WriteFile(m_deviceHandle, buffer, bufferSize, &bytesWritten, NULL)) 
-    {
-        std::cerr << "WriteFile failed" << std::endl;
-        return false;
-    }
-
-    return true;
+    StatusConection = false;
+    emit GUISetStatusConection(static_cast<bool>(StatusConection));
 }
+//------------------------------------------------------------------------------
+void  USBProcedure::handleRecive(QByteArray data)
+{
+    QMutexLocker(mutexReade);
+    ReadeData = data;
+}
+//------------------------------------------------------------------------------
 
-unsigned short USBProcedure::getVendorID() 
+
+/*unsigned short USBProcedure::getVendorID() 
 {
     return m_attributes.VendorID;
 }
@@ -190,7 +226,7 @@ unsigned short USBProcedure::getOutputReportByteLength()
     return m_capabilities.OutputReportByteLength;
 }
 
-bool USBProcedure::getDeviceCapabilities(const std::wstring& devicePath) 
+bool USBProcedure::getDeviceCapabilities(const std::wstring& devicePath)
 {
     if (!HidD_GetAttributes(m_deviceHandle, &m_attributes)) 
     {
@@ -212,4 +248,4 @@ bool USBProcedure::getDeviceCapabilities(const std::wstring& devicePath)
     }
 
     return true;
-}
+}*/

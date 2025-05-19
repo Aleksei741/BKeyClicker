@@ -1,103 +1,67 @@
 #pragma once
 #include <QCoreApplication>
-#include <QRunnable>
 #include <QMutex>
 #include <QWaitCondition>
 #include <QVector>
 #include <QDebug>
+
+#include <atomic>
+#include <options>
 
 #include <windows.h>
 #include <setupapi.h>
 #include <initguid.h>
 #include <hidsdi.h>
 
+#include "USBDataWriter.h"
 
-class USBProcedure : public QRunnable 
+class USBProcedure : public QObject
 {
 public:
     USBProcedure();
     ~USBProcedure();
 
-    void run() override;
-
     bool initialize();
-    bool EnumUsbDevice();
+    bool SearchUsbDevice();
     bool isTargetDevice(const QString& hidPath);
     bool openDevice(const QString& devicePath);
-    void closeDevice();
+    void closeDevice(HANDLE& hDev_);
 
-    bool readData(unsigned char* buffer, DWORD bufferSize, DWORD& bytesRead);
-    bool writeData(unsigned char* buffer, DWORD bufferSize);
+    QByteArray readData();
+    bool writeData(QByteArray& data);
+
+slots:
+    void process();
+    void stop();
+
+    void handleWriteError();
+    void handleRecive(QByteArray data);
+
+signals:
+    void GUISetStatusConection(bool status);
 
 private:
-    // Дескриптор набора устройств, возвращаемый SetupDiGetClassDevs.
-    // Используется для перечисления устройств определенного класса (например, HID).
-    HDEVINFO hDevInfo;
-
-    // Структура, содержащая информацию об устройстве (SP_DEVINFO_DATA).
-    // Заполняется функцией SetupDiEnumDeviceInfo при перечислении устройств.
-    SP_DEVINFO_DATA dInf;
-
-    // Структура, описывающая интерфейс устройства (SP_DEVICE_INTERFACE_DATA).
-    // Используется для получения пути к устройству через SetupDiGetDeviceInterfaceDetail.
-    SP_DEVICE_INTERFACE_DATA dIntDat;
-
-    // Указатель на структуру с детальной информацией об интерфейсе устройства.
-    // Содержит путь к устройству (например, "\\?\hid#vid_1234&pid_5678...").
-    // Выделяется динамически и требует освобождения через free().
-    PSP_DEVICE_INTERFACE_DETAIL_DATA dIntDet = nullptr;
-
-    // GUID (Globally Unique Identifier) для HID-устройств.
-    // Заполняется функцией GetHidGuid, чтобы идентифицировать HID-класс.
-    GUID hidGuid;
-
-    // Строка, хранящая путь к HID-устройству в формате QString.
-    // Например: "\\\\?\\hid#vid_1234&pid_5678#..."
-    QString devicePath_;
+    HDEVINFO hDevInfo;  // Дескриптор набора устройств
+    SP_DEVINFO_DATA dInf;   // Структура, содержащая информацию об устройстве (SP_DEVINFO_DATA).
+    SP_DEVICE_INTERFACE_DATA dIntDat;   // Структура, описывающая интерфейс устройства
+    PSP_DEVICE_INTERFACE_DETAIL_DATA dIntDet = nullptr; // Указатель на структуру с детальной информацией об интерфейсе устройства.
+    GUID hidGuid;   // GUID (Globally Unique Identifier) для HID-устройств.
+    QString DevicePath;    // Строка, хранящая путь к HID-устройству в формате QString.
+    HANDLE hDev = nullptr;    //Дескриптор устройсвтва
 
     const QString _vid = "vid_10c4";
-    const QString _pid = "pid_82cd";
+    const QString _pid = "pid_82cd";    
 
-    HANDLE fileID = nullptr;
-};
+    std::atomic<bool> StatusConection = false;
+    std::atomic<bool> active = true;
 
+    //Write
+    QThread* threadWrite;
+    USBDataWriter* writer;
 
-class ConnectionMonitor : public QRunnable 
-{
-public:
-    ConnectionMonitor(HANDLE& fileID, std::wstring devicePath, std::function<void(HANDLE)> onConnected)
-        : fileID_(fileID), devicePath_(devicePath), onConnected_(onConnected) {}
-
-    void run() override {
-        while (true) {
-            if (fileID_ == INVALID_HANDLE_VALUE) {
-                // Attempt to reconnect
-                HANDLE newFileID = CreateFile(devicePath_.c_str(),
-                    GENERIC_READ | GENERIC_WRITE,
-                    0,
-                    NULL,
-                    OPEN_EXISTING,
-                    FILE_FLAG_OVERLAPPED,
-                    NULL);
-
-                if (newFileID != INVALID_HANDLE_VALUE) {
-                    QMutex mutex;
-                    QMutexLocker locker(&mutex);
-                    fileID_ = newFileID;
-                    onConnected_(fileID_);  // Callback function to signal successful connection
-                    qDebug() << "Reconnected to device.";
-                }
-                else {
-                    qDebug() << "Failed to reconnect:" << GetLastError();
-                }
-            }
-
-            QThread::sleep(5); // Check every 5 seconds
-        }
-    }
-
-private:
-    HANDLE& fileID_;
-    std::wstring devicePath_;
-    std::function<void(HANDLE)> onConnected_;
+    //Reade
+    QThread* threadReade;
+    USBDataWriter* reader;
+    QMutex mutexReade;
+    QByteArray ReadeData;
 };

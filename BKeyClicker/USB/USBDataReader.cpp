@@ -1,70 +1,87 @@
 #include "USBDataReader.h"
 
-USBDataReader::USBDataReader(HANDLE fileID, int len_package, QWaitCondition* dataReady)
-    : fileID_(fileID), len_package_(len_package), dataReady_(dataReady)
+USBDataReader::USBDataReader(HANDLE* hDev_)
+    : hDev(hDev_)
 {
-    oRead.hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+    oRead.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
     if (oRead.hEvent == NULL)
     {
         qDebug() << "USBDataReader CreateEvent failed: " << GetLastError();
-        throw std::invalid_argument("USBDataReader CreateEvent failed");
+        throw std::runtime_error("USBDataReader CreateEvent failed");
     }
 }
-
+//------------------------------------------------------------------------------
 USBDataReader::~USBDataReader()
 {
     CloseHandle(oRead.hEvent);
 }
-
-void USBDataReader::run()
+//------------------------------------------------------------------------------
+void USBDataReader::processData(const BYTE* data, DWORD size)
 {
-    BYTE reportread[256]; // Adjust size as needed
+    QByteArray byteArray(reinterpret_cast<const char*>(data), size);
+    emit DataReceived(byteArray);
+}
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+// slots
+//------------------------------------------------------------------------------
+void USBDataReader::process()
+{
+    BYTE reportread[256];
     DWORD bytesRead;
 
-    while (!stopFlag_) // Используйте флаг для graceful shutdown
+    while (active)
     {
-        // Асинхронное чтение
-        if (!ReadFile(fileID_, reportread, len_package_ + 1, NULL, &oRead))
+        ResetEvent(oRead.hEvent);
+
+        if (!ReadFile(*hDev, reportread, len_package_ + 1, NULL, &oRead))
         {
             DWORD error = GetLastError();
-            if (error != ERROR_IO_PENDING) {
-                qDebug() << "ReadFile failed:" << error;
-                break;
+            if (error != ERROR_IO_PENDING) 
+            {
+                qDebug() << "USBDataReader ReadFile failed: " << error;
             }
+                        
+            DWORD waitResult = WaitForSingleObject(oRead.hEvent, 100); 
 
-            // Ожидаем завершение операции с таймаутом
-            DWORD waitResult = WaitForSingleObject(oRead.hEvent, 100);
             if (waitResult == WAIT_OBJECT_0)
             {
                 if (!GetOverlappedResult(fileID_, &oRead, &bytesRead, FALSE))
                 {
-                    qDebug() << "USBDataReader GetOverlappedResult failed:" << GetLastError();
+                    error = GetLastError();
+                    qDebug() << "USBDataReader GetOverlappedResult failed: " << error;
                 }
-
-                // Обработка успешно прочитанных данных
-                processData(reportread, bytesRead);
+                else
+                {
+                    if (bytesRead > 0) 
+                    {
+                        processData(reportread, bytesRead);
+                    }
+                }
             }
-            else if (waitResult != WAIT_TIMEOUT)
+            else if (waitResult == WAIT_TIMEOUT)
             {
-                qDebug() << "USBDataReader Wait failed:" << GetLastError();
+                CancelIo(*hDev);
             }
         }
         else
         {
-            // Синхронное завершение (редкий случай)
+            // Синхронное завершение
             bytesRead = oRead.InternalHigh;
-            processData(reportread, bytesRead);
+            if (bytesRead > 0) 
+            {
+                processData(reportread, bytesRead);
+            }
         }
     }
+
+    CancelIo(*hDev);
 }
-
-
-void USBDataReader::processData(const BYTE* data, DWORD size)
+//------------------------------------------------------------------------------
+void USBDataReader::stop()
 {
-    QByteArray byteArray(reinterpret_cast<const char*>(data), size);
-    {
-        QMutexLocker locker(mutex_);
-        dataBuffer = byteArray;
-    }
-    dataReady_->wakeOne();
+    active = false;
 }
+//------------------------------------------------------------------------------
+

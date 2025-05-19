@@ -2,7 +2,6 @@
 #include <atomic>
 
 #include <QCoreApplication>
-#include <QRunnable>
 #include <QMutex>
 #include <QWaitCondition>
 #include <QDebug>
@@ -10,23 +9,24 @@
 #include <windows.h>
 
 
-class USBDataReader : public QRunnable
+class USBDataReader : public QObject
 {
 public:
-    USBDataReader(HANDLE fileID, int len_package, QWaitCondition* dataReady);
+    USBDataReader(HANDLE* hDev_);
     ~USBDataReader() override;
 
-    void run() override;
-    
+signals:
+    void DataReceived(QByteArray data);
+
+slots:
+    void process();
+    void stop();
 
 private:
-    HANDLE fileID_;
-    int len_package_;
-    QMutex* mutex_;
-    QWaitCondition* dataReady_;
-    QByteArray dataBuffer; 
+
+    HANDLE* hDev;
     OVERLAPPED oRead = { 0 };
-    std::atomic<bool> stopFlag_;
+    std::atomic<bool> active = true;
 
     void processData(const BYTE* data, DWORD size);
 };

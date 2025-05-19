@@ -26,7 +26,7 @@ MainWindow::MainWindow(int timerCount, int pixelCount, QWidget* parent)
 	QPixmap pixmapEthernet(":/ethernet.png");
 	pixmapEthernet = pixmapEthernet.scaled(30, 30, Qt::KeepAspectRatio);
 
-	QLabel* imageUSBLabel = new QLabel();
+	imageUSBLabel = new QLabel();
 	imageUSBLabel->setPixmap(pixmapUSB);
 	imageUSBLabel->setAttribute(Qt::WA_TranslucentBackground);
 	imageUSBLabel->setStyleSheet("background: transparent;");
@@ -35,7 +35,7 @@ MainWindow::MainWindow(int timerCount, int pixelCount, QWidget* parent)
 	imageUSBLabel->setFixedSize(30, 30);
 	layerimage->addWidget(imageUSBLabel);
 
-	QLabel* imageEthernetLabel = new QLabel();
+	imageEthernetLabel = new QLabel();
 	imageEthernetLabel->setPixmap(pixmapEthernet);
 	imageEthernetLabel->setAttribute(Qt::WA_TranslucentBackground);
 	imageEthernetLabel->setStyleSheet("background: transparent;");
@@ -46,7 +46,7 @@ MainWindow::MainWindow(int timerCount, int pixelCount, QWidget* parent)
 
 	layerStatus->addLayout(layerimage, 0);
 
-	imageUSBLabel->hide();
+	
 	//------------------------------------
 
 	layerGeneral->addLayout(layerStatus, 0);
@@ -484,5 +484,13 @@ QFrame* MainWindow::createWidgetsPixel()
 	tabContent->setLayout(tabPixelLayout);
 	scrollArea->setWidget(tabContent); // установить содержимое
 	return scrollArea;
+}
+//============================================================================================
+void MainWindow::handleStatusConnection(bool status)
+{
+	if(status)
+		imageUSBLabel->show();
+	else
+		imageUSBLabel->hide();
 }
 //============================================================================================
