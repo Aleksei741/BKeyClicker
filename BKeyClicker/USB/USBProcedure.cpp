@@ -11,7 +11,10 @@ USBProcedure::USBProcedure()
 
 USBProcedure::~USBProcedure() 
 {
-
+    if (fileID != INVALID_HANDLE_VALUE) 
+    {
+        CloseHandle(fileID);
+    }
 }
 
 bool USBProcedure::initialize() 
@@ -28,10 +31,10 @@ bool USBProcedure::initialize()
 bool USBProcedure::EnumUsbDevice()
 {
     bool status = false;
-    quint16 rLength = 0;
+    unsigned long rLength = 0;
     quint16 i = 0;
 
-    hDevInfo = SetupDiGetClassDevs(&hidGuid, NULL, 0, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+    hDevInfo = SetupDiGetClassDevs(&hidGuid, nullptr, 0, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
 
     if (hDevInfo != INVALID_HANDLE_VALUE)
     {
@@ -47,25 +50,26 @@ bool USBProcedure::EnumUsbDevice()
                 break;
             }
 
-            QVector<quint8> buffer(rLength);
-            dIntDet = reinterpret_cast<PSP_DEVICE_INTERFACE_DETAIL_DATA*>(buffer.data());
+            dIntDet = reinterpret_cast<PSP_DEVICE_INTERFACE_DETAIL_DATA>(malloc(rLength));
             dIntDet->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
 
             if (!SetupDiGetDeviceInterfaceDetail(hDevInfo, &dIntDat, dIntDet, rLength, &rLength, 0))
             {
                 qDebug() << "USBProcedure Handle error 2";
+                free(dIntDet);
                 break;
             }
 
             devicePath_ = QString::fromWCharArray(dIntDet->DevicePath, wcslen(dIntDet->DevicePath));
+            free(dIntDet);
 
-            if (!flg)
+            qDebug() << "USBProcedure devicePath: " << devicePath_;
+
+            if (isTargetDevice(devicePath_))
             {
-                if (connecthid(devpath)) //������� �����������.
-                {
-                    status = TRUE; //���� �������
-                    break;
-                }
+                qDebug() << "USBProcedure search finish";
+                status = TRUE;
+                break;
             }
             i++;
         }
@@ -75,48 +79,21 @@ bool USBProcedure::EnumUsbDevice()
     return status;
 }
 
-std::vector<std::wstring> USBProcedure::getDevicePaths() 
+bool USBProcedure::isTargetDevice(const QString& hidPath)
 {
-    std::vector<std::wstring> devicePaths;
-    SP_DEVICE_INTERFACE_DATA deviceInterfaceData;
-    deviceInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
+    if (hidPath.contains(_vid))
+        if (hidPath.contains(_pid))
+            return true;
 
-    if (m_deviceInfoSet == INVALID_HANDLE_VALUE) 
-    {
-        std::cerr << "Device info set is not initialized" << std::endl;
-        return devicePaths; // Return empty vector
-    }
-
-    for (DWORD i = 0; SetupDiEnumDeviceInterfaces(m_deviceInfoSet, NULL, &hidGuid, i, &deviceInterfaceData); ++i)
-    {
-        DWORD requiredSize = 0;
-        SetupDiGetDeviceInterfaceDetail(m_deviceInfoSet, &deviceInterfaceData, NULL, 0, &requiredSize, NULL);
-
-        PSP_DEVICE_INTERFACE_DETAIL_DATA deviceInterfaceDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA)malloc(requiredSize);
-        if (!deviceInterfaceDetailData) {
-            std::cerr << "Failed to allocate memory for device interface detail data" << std::endl;
-            continue; // Skip this device
-        }
-        deviceInterfaceDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
-
-        if (!SetupDiGetDeviceInterfaceDetail(m_deviceInfoSet, &deviceInterfaceData, deviceInterfaceDetailData, requiredSize, NULL, NULL))
-        {
-            std::cerr << "SetupDiGetDeviceInterfaceDetail failed" << std::endl;
-            free(deviceInterfaceDetailData);
-            continue; // Skip this device
-        }
-
-        devicePaths.push_back(deviceInterfaceDetailData->DevicePath);
-        free(deviceInterfaceDetailData);
-    }
-
-    return devicePaths;
+    return false;
 }
 
-bool USBProcedure::openDevice(const std::wstring& devicePath) 
+bool USBProcedure::openDevice(const QString& devicePath)
 {
-    m_deviceHandle = CreateFileW(
-        devicePath.c_str(),
+    std::wstring wPath = devicePath.toStdWString();
+
+    fileID = CreateFile(
+        wPath.c_str(),
         GENERIC_READ | GENERIC_WRITE,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
         NULL,
@@ -125,10 +102,19 @@ bool USBProcedure::openDevice(const std::wstring& devicePath)
         NULL
     );
 
-    if (m_deviceHandle == INVALID_HANDLE_VALUE) 
+    if (fileID != INVALID_HANDLE_VALUE)
     {
-        std::cerr << "CreateFile failed" << std::endl;
-        return false;
+        status = TRUE;
+        //Открываем поток на чтение. Он работает постоянно до закрытия
+        //сеанса связи
+        killRead = 0;
+        reader = CreateThread(NULL, 0, ReadThread, NULL, CREATE_ALWAYS, NULL);
+        //создаем поток записи в приостановленном состоянии.
+        writer = CreateThread(NULL, 0, WriteThread, NULL, CREATE_SUSPENDED, NULL);
+        //Отчитываемся об успешном подключении и т.д.
+        flg = TRUE;
+        //disconhid(); // на всяки случай отключаем "не то" устройство
+        //если оно вдруг открылось с CreateFile
     }
 
     return getDeviceCapabilities(devicePath);

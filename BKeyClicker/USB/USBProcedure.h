@@ -4,7 +4,13 @@
 #include <QMutex>
 #include <QWaitCondition>
 #include <QVector>
+#include <QDebug>
+
 #include <windows.h>
+#include <setupapi.h>
+#include <initguid.h>
+#include <hidsdi.h>
+
 
 class USBProcedure : public QRunnable 
 {
@@ -16,31 +22,43 @@ public:
 
     bool initialize();
     bool EnumUsbDevice();
-    std::vector<std::wstring> getDevicePaths(); 
-    bool openDevice(const std::wstring& devicePath);
+    bool isTargetDevice(const QString& hidPath);
+    bool openDevice(const QString& devicePath);
     void closeDevice();
 
     bool readData(unsigned char* buffer, DWORD bufferSize, DWORD& bytesRead);
     bool writeData(unsigned char* buffer, DWORD bufferSize);
 
-    unsigned short getVendorID();
-    unsigned short getProductID();
-    unsigned short getInputReportByteLength();
-    unsigned short getOutputReportByteLength();
-
 private:
-    HDEVINFO hDevInfo; //���������� � ������ ���������
-    SP_DEVINFO_DATA dInf; //������ ������ �� ����������
-    SP_DEVICE_INTERFACE_DATA dIntDat; //������ ������ �� ����������
+    // Дескриптор набора устройств, возвращаемый SetupDiGetClassDevs.
+    // Используется для перечисления устройств определенного класса (например, HID).
+    HDEVINFO hDevInfo;
+
+    // Структура, содержащая информацию об устройстве (SP_DEVINFO_DATA).
+    // Заполняется функцией SetupDiEnumDeviceInfo при перечислении устройств.
+    SP_DEVINFO_DATA dInf;
+
+    // Структура, описывающая интерфейс устройства (SP_DEVICE_INTERFACE_DATA).
+    // Используется для получения пути к устройству через SetupDiGetDeviceInterfaceDetail.
+    SP_DEVICE_INTERFACE_DATA dIntDat;
+
+    // Указатель на структуру с детальной информацией об интерфейсе устройства.
+    // Содержит путь к устройству (например, "\\?\hid#vid_1234&pid_5678...").
+    // Выделяется динамически и требует освобождения через free().
     PSP_DEVICE_INTERFACE_DETAIL_DATA dIntDet = nullptr;
+
+    // GUID (Globally Unique Identifier) для HID-устройств.
+    // Заполняется функцией GetHidGuid, чтобы идентифицировать HID-класс.
     GUID hidGuid;
 
+    // Строка, хранящая путь к HID-устройству в формате QString.
+    // Например: "\\\\?\\hid#vid_1234&pid_5678#..."
     QString devicePath_;
 
-    const std::string _vid = "vid_10c4";
-    const std::string _pid = "pid_82cd";
+    const QString _vid = "vid_10c4";
+    const QString _pid = "pid_82cd";
 
-    bool getDeviceCapabilities(const std::wstring& devicePath);
+    HANDLE fileID = nullptr;
 };
 
 
