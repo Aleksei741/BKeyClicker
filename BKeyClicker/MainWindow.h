@@ -75,7 +75,7 @@ signals:
 	void elementPixelChanged(const MainWindowSignal_DType signal, const QVariant& value, int rowIndex);
 	void clickButtonSetPixel(int rowIndex);
 
-private slots:
+public slots:
 	void handleStatusConnection(bool status);
 
 private:

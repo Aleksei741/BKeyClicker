@@ -29,54 +29,62 @@ void USBDataReader::processData(const BYTE* data, DWORD size)
 void USBDataReader::process()
 {
     BYTE reportread[256];
-    DWORD bytesRead;
+    DWORD bytesRead = 10;
 
     while (active)
     {
         ResetEvent(oRead.hEvent);
 
-        if (!ReadFile(*hDev, reportread, len_package_ + 1, NULL, &oRead))
+        if (*hDev != INVALID_HANDLE_VALUE)
         {
-            DWORD error = GetLastError();
-            if (error != ERROR_IO_PENDING) 
+            if (!ReadFile(*hDev, reportread, bytesRead + 1, NULL, &oRead))
             {
-                qDebug() << "USBDataReader ReadFile failed: " << error;
-            }
-                        
-            DWORD waitResult = WaitForSingleObject(oRead.hEvent, 100); 
-
-            if (waitResult == WAIT_OBJECT_0)
-            {
-                if (!GetOverlappedResult(fileID_, &oRead, &bytesRead, FALSE))
+                DWORD error = GetLastError();
+                if (error != ERROR_IO_PENDING)
                 {
-                    error = GetLastError();
-                    qDebug() << "USBDataReader GetOverlappedResult failed: " << error;
+                    qDebug() << "USBDataReader ReadFile failed: " << error << " Handle: " << *hDev;
+                    emit readUSBError();
                 }
-                else
+
+                DWORD waitResult = WaitForSingleObject(oRead.hEvent, 1000);
+
+                if (waitResult == WAIT_OBJECT_0)
                 {
-                    if (bytesRead > 0) 
+                    if (!GetOverlappedResult(*hDev, &oRead, &bytesRead, FALSE))
                     {
-                        processData(reportread, bytesRead);
+                        error = GetLastError();
+                        qDebug() << "USBDataReader GetOverlappedResult failed: " << error;
+                        emit readUSBError();
+                    }
+                    else
+                    {
+                        if (bytesRead > 0)
+                        {
+                            processData(reportread, bytesRead);
+                        }
                     }
                 }
+                else if (waitResult == WAIT_TIMEOUT)
+                {
+                    CancelIo(*hDev);
+                }
             }
-            else if (waitResult == WAIT_TIMEOUT)
+            else
             {
-                CancelIo(*hDev);
-            }
-        }
-        else
-        {
-            // Синхронное завершение
-            bytesRead = oRead.InternalHigh;
-            if (bytesRead > 0) 
-            {
-                processData(reportread, bytesRead);
+                // Синхронное завершение
+                bytesRead = oRead.InternalHigh;
+                if (bytesRead > 0)
+                {
+                    processData(reportread, bytesRead);
+                }
             }
         }
     }
 
     CancelIo(*hDev);
+
+    qDebug() << "USBDataReader process stop.";
+    emit finished();
 }
 //------------------------------------------------------------------------------
 void USBDataReader::stop()

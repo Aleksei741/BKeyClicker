@@ -2,6 +2,7 @@
 #include <QObject>
 #include "ButtonProcedure.h"
 #include "MainWindow.h"
+#include "USBProcedure.h"
 
 struct ButtonFTimer_DType
 {

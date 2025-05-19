@@ -5,20 +5,25 @@
 #include <QMutex>
 #include <QWaitCondition>
 #include <QDebug>
+#include <QObject>
 
 #include <windows.h>
 
 
 class USBDataReader : public QObject
 {
+    Q_OBJECT
+
 public:
     USBDataReader(HANDLE* hDev_);
-    ~USBDataReader() override;
+    ~USBDataReader();
 
 signals:
-    void DataReceived(QByteArray data);
+    void readUSBError();
+    void finished();
+    void DataReceived(QByteArray data);    
 
-slots:
+public slots:
     void process();
     void stop();
 

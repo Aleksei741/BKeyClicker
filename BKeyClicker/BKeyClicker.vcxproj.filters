@@ -76,15 +76,6 @@
     <ClInclude Include="ControlledEntities\cTimerButton.h">
       <Filter>Header Files\ControlledEntities</Filter>
     </ClInclude>
-    <ClInclude Include="USB\USBDataReader.h">
-      <Filter>Header Files\USB</Filter>
-    </ClInclude>
-    <ClInclude Include="USB\USBDataWriter.h">
-      <Filter>Header Files\USB</Filter>
-    </ClInclude>
-    <ClInclude Include="USB\USBProcedure.h">
-      <Filter>Header Files\USB</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MainWindow.h">
@@ -101,6 +92,15 @@
     </QtMoc>
     <QtMoc Include="ButtonProcedure.h">
       <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="USB\USBDataWriter.h">
+      <Filter>Header Files\USB</Filter>
+    </QtMoc>
+    <QtMoc Include="USB\USBProcedure.h">
+      <Filter>Header Files\USB</Filter>
+    </QtMoc>
+    <QtMoc Include="USB\USBDataReader.h">
+      <Filter>Header Files\USB</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

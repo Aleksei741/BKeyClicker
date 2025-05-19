@@ -68,7 +68,7 @@
     <ClCompile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)\CustomWidgets;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\CustomWidgets;$(ProjectDir)\ControlledEntities;$(ProjectDir)\USB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
       <PreprocessorDefinitions>QT_NO_DEBUG_OUTPUT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -80,7 +80,7 @@
     <ClCompile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)\CustomWidgets;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\CustomWidgets;$(ProjectDir)\ControlledEntities;$(ProjectDir)\USB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>D:\ProgramFiles\Qt\vcpkg\vcpkg_installed\x64-windows-static\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -115,9 +115,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="USB\USBDataReader.h" />
-    <ClInclude Include="USB\USBDataWriter.h" />
-    <ClInclude Include="USB\USBProcedure.h" />
+    <QtMoc Include="USB\USBDataReader.h" />
+    <QtMoc Include="USB\USBDataWriter.h" />
+    <QtMoc Include="USB\USBProcedure.h" />
     <QtMoc Include="ButtonProcedure.h" />
     <ClInclude Include="ControlledEntities\cTimerButton.h" />
     <QtMoc Include="CustomWidgets\ListButtonComboBox.h" />

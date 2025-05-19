@@ -17,17 +17,13 @@ int main(int argc, char* argv[])
     ButtonProcedure* buttonProcess = new ButtonProcedure();
     buttonProcess->moveToThread(threadButtonProcess);
     QObject::connect(threadButtonProcess, &QThread::started, buttonProcess, &ButtonProcedure::process);
-        QObject::connect(buttonProcess, &ButtonProcedure::error,
-        [](const QString& msg) {
-            qDebug() << "Ошибка:" << msg;
-        });
     QObject::connect(buttonProcess, &ButtonProcedure::finished, threadButtonProcess, &QThread::quit);
     QObject::connect(buttonProcess, &ButtonProcedure::finished, buttonProcess, &ButtonProcedure::deleteLater);
     QObject::connect(threadButtonProcess, &QThread::finished, threadButtonProcess, &QThread::deleteLater);
     threadButtonProcess->start();
 
 	MainWindow window(10, 10);
-    QObject::connect(USBProcess, &USBProcedure::GUISetStatusConection, MainWindow, &MainWindow::handleStatusConnection);
+    QObject::connect(USBProcess, &USBProcedure::GUISetStatusConection, &window, &MainWindow::handleStatusConnection);
 		
 	window.show();
 	return app.exec();

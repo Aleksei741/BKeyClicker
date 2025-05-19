@@ -3,8 +3,6 @@
 USBDataWriter::USBDataWriter(HANDLE* hDev_)
     : hDev(hDev_)
 {
-    setAutoDelete(true);
-
     oWrite.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
     if (oWrite.hEvent == NULL)
     {
@@ -20,7 +18,7 @@ USBDataWriter::~USBDataWriter()
 //------------------------------------------------------------------------------
 bool USBDataWriter::write(QByteArray data)
 {
-    QMutexLocker(mutexWrite);
+    QMutexLocker locker(&mutexWrite);
     dataToWrite.enqueue(data);
     cvWrite.wakeOne();
 
@@ -40,7 +38,7 @@ void USBDataWriter::process()
     while (active)
     {
         {
-            QMutexLocker(mutexWrite);
+            QMutexLocker locker(&mutexWrite);
 
             if(dataToWrite.isEmpty())
                 cvWrite.wait(&mutexWrite);
@@ -67,6 +65,9 @@ void USBDataWriter::process()
             qDebug() << "USBDataWriter: Successfully written" << bytesWritten << "bytes";            
         }
     }
+
+    qDebug() << "USBDataWriter process stop.";
+    emit finished();
 }
 //------------------------------------------------------------------------------
 void USBDataWriter::stop()
