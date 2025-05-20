@@ -27,7 +27,7 @@ public:
     ~USBProcedure();
 
     bool initialize();
-    std::optional<QString> SearchUsbDevice();
+    QString SearchUsbDevice();
     bool isTargetDevice(const QString& hidPath);
     bool openDevice(const QString& devicePath);
     void closeDevice(HANDLE& hDev_);
@@ -57,7 +57,7 @@ private:
     SP_DEVICE_INTERFACE_DATA dIntDat;   // Структура, описывающая интерфейс устройства
     PSP_DEVICE_INTERFACE_DETAIL_DATA dIntDet = nullptr; // Указатель на структуру с детальной информацией об интерфейсе устройства.
     GUID hidGuid;   // GUID (Globally Unique Identifier) для HID-устройств.
-    std::optional<QString> DevicePath;    // Строка, хранящая путь к HID-устройству в формате QString.
+    QString DevicePath;    // Строка, хранящая путь к HID-устройству в формате QString.
     HANDLE hDev = nullptr;    //Дескриптор устройсвтва
 
     const QString _vid = "vid_10c4";

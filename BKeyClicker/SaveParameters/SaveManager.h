@@ -1,4 +1,5 @@
 #pragma once
+#include <QCoreApplication>
 #include <QSettings>
 #include <QDebug>
 #include <QObject>
@@ -15,9 +16,17 @@ public:
 	SaveManager();
 	~SaveManager();
 private:
-	void SaveTimerParameters(const QVector<ButtonFTimer_DType>& Option, const QSettings& settings = BaseSettings);
-	void LoadTimerParameters(QVector<ButtonFTimer_DType>& Option, const QSettings& settings = BaseSettings);
+	void SaveTimerParameters(const QVector<ButtonFTimer_DType>& Option, QSettings& settings);
+	void LoadTimerParameters(QVector<ButtonFTimer_DType>& Option, QSettings& settings);
+	void SaveConditionsParameters(const QVector<ButtonFCondition_DType>& Option, QSettings& settings);
+	void LoadConditionsParameters(QVector<ButtonFCondition_DType>& Option, QSettings& settings);
 
-	QSettings BaseSettings(QCoreApplication::applicationDirPath() + "/config.ini", QSettings::IniFormat);
+	void SaveAllOptions(
+		const QVector<ButtonFTimer_DType>& ParamTimer,
+		const QVector<ButtonFCondition_DType>& ParamCondition,
+		const QString& Path
+	);
+
+	QSettings BaseSettings;
 };
 

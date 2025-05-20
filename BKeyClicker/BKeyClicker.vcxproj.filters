@@ -85,9 +85,6 @@
     <ClInclude Include="ControlledEntities\cTimerButton.h">
       <Filter>Header Files\ControlledEntities</Filter>
     </ClInclude>
-    <ClInclude Include="SaveParameters\SaveManager.h">
-      <Filter>Header Files\SaveParam</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MainWindow.h">
@@ -113,6 +110,9 @@
     </QtMoc>
     <QtMoc Include="USB\USBDataReader.h">
       <Filter>Header Files\USB</Filter>
+    </QtMoc>
+    <QtMoc Include="SaveParameters\SaveManager.h">
+      <Filter>Header Files\SaveParam</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

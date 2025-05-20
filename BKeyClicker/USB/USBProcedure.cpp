@@ -4,7 +4,7 @@
 #pragma comment(lib, "hid.lib")
 #pragma comment(lib, "setupapi.lib")
 
-USBProcedure::USBProcedure()
+USBProcedure::USBProcedure() : hDev(INVALID_HANDLE_VALUE)
 {
     initialize();
 }
@@ -26,9 +26,9 @@ bool USBProcedure::initialize()
     return true;
 }
 //------------------------------------------------------------------------------
-std::optional<QString> USBProcedure::SearchUsbDevice()
+QString USBProcedure::SearchUsbDevice()
 {
-    std::optional<QString> status = std::nullopt;
+    QString status = "";
     unsigned long rLength = 0;
     quint16 i = 0;
     QString DevicePath_;
@@ -64,7 +64,7 @@ std::optional<QString> USBProcedure::SearchUsbDevice()
 
             if (isTargetDevice(DevicePath_))
             {
-                qDebug() << "USBProcedure search finish";
+                qDebug() << "USBProcedure search finish " << DevicePath_;
                 status = DevicePath_;
                 break;
             }
@@ -78,9 +78,10 @@ std::optional<QString> USBProcedure::SearchUsbDevice()
 //------------------------------------------------------------------------------
 bool USBProcedure::isTargetDevice(const QString& hidPath)
 {
-    if (hidPath.contains(_vid))
-        if (hidPath.contains(_pid))
-            return true;
+    if(!hidPath.contains("kbd"))
+        if (hidPath.contains(_vid))
+            if (hidPath.contains(_pid))
+                return true;
 
     return false;
 }
@@ -95,20 +96,22 @@ bool USBProcedure::openDevice(const QString& devicePath)
         FILE_SHARE_READ | FILE_SHARE_WRITE,
         NULL,
         OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
+        FILE_FLAG_OVERLAPPED,
         NULL
     );
+
+    QThread::msleep(200);
 
     if (hDev != INVALID_HANDLE_VALUE)
     {
         StatusConection = true;
-        qDebug() << "USBProcedure CreateFile COMPLITED " << " Handle: " << hDev;
+        qDebug() << "USBProcedure CreateFile COMPLITED "  << " Handle: " << hDev;
         StartThreadWrite();
         StartThreadReade();        
     }
     else
     {
-        qDebug() << "USBProcedure CreateFile INVALID_HANDLE_VALUE";
+        qDebug() << "USBProcedure CreateFile INVALID_HANDLE_VALUE " << "Error: " << GetLastError();
     }
 
     return true;
@@ -118,15 +121,16 @@ void USBProcedure::closeDevice(HANDLE& hDev_)
 {    
     if (hDev_ != INVALID_HANDLE_VALUE)
     {
+        CancelIo(hDev_);
+
         StopThreadWrite();
         StopThreadReade();
                 
-        CancelIo(hDev_);
         CloseHandle(hDev_);
         qDebug() << "USBProcedure CloseHandle " << " Handle: " << hDev_;
+        QThread::msleep(200);
+        hDev_ = INVALID_HANDLE_VALUE;
     }
-        
-    hDev_ = INVALID_HANDLE_VALUE;
 }
 //------------------------------------------------------------------------------
 QByteArray USBProcedure::readData()
@@ -208,21 +212,21 @@ void USBProcedure::process()
 {
     while (active)
     {
-        QCoreApplication::processEvents();
+        //QCoreApplication::processEvents();
 
         if (!StatusConection)
         {
             closeDevice(hDev);
             DevicePath = SearchUsbDevice();
-            if (DevicePath)
+            if (!DevicePath.isEmpty())
             {
-                openDevice(DevicePath.value());
+                openDevice(DevicePath);
             }
         }
 
         emit GUISetStatusConection(static_cast<bool>(StatusConection));
 
-        QThread::sleep(std::chrono::milliseconds{ 1000 });
+        QThread::msleep(1000);
     }
 
     qDebug() << "USBDataReader process stop.";

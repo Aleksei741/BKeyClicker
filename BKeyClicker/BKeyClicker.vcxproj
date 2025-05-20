@@ -115,7 +115,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="SaveParameters\SaveManager.h" />
+    <QtMoc Include="SaveParameters\SaveManager.h" />
     <QtMoc Include="USB\USBDataReader.h" />
     <QtMoc Include="USB\USBDataWriter.h" />
     <QtMoc Include="USB\USBProcedure.h" />

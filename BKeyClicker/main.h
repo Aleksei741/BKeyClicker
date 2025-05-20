@@ -1,6 +1,6 @@
 #pragma once
 #include <QObject>
-#include <QVectort>
+#include <QVector>
 
 #include "ButtonProcedure.h"
 #include "MainWindow.h"

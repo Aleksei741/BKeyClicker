@@ -1,7 +1,7 @@
 #include "ButtonProcedure.h"
 
 
-ButtonProcedure::ButtonProcedure() : m_running(true), m_paused(false)
+ButtonProcedure::ButtonProcedure() : active(true), m_paused(false)
 {
     
 }

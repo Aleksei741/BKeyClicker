@@ -1,14 +1,15 @@
 #include "SaveManager.h"
 //------------------------------------------------------------------------------
-SaveManager::SaveManager()
+SaveManager::SaveManager() :
+BaseSettings(QCoreApplication::applicationDirPath() + "/config.ini", QSettings::IniFormat)
 {
-	settings.setAtomicSyncRequired(false);
+	
 }
 //------------------------------------------------------------------------------
 SaveManager::~SaveManager()
 {}
 //------------------------------------------------------------------------------
-void SaveManager::SaveTimerParameters(const QVector<ButtonFTimer_DType>& Option, const QSettings& settings)
+void SaveManager::SaveTimerParameters(const QVector<ButtonFTimer_DType>& Option, QSettings& settings)
 {
 	settings.beginGroup("KeyFTimer");
 	for (int i = 0; i < Option.size(); ++i)
@@ -26,7 +27,7 @@ void SaveManager::SaveTimerParameters(const QVector<ButtonFTimer_DType>& Option,
 	settings.endGroup();
 }
 //------------------------------------------------------------------------------
-void SaveManager::LoadTimerParameters(QVector<ButtonFTimer_DType>& Option, const QSettings& settings)
+void SaveManager::LoadTimerParameters(QVector<ButtonFTimer_DType>& Option, QSettings& settings)
 {
 	settings.beginGroup("KeyFTimer");
 	for (int i = 0; i < Option.size(); ++i)
@@ -44,26 +45,26 @@ void SaveManager::LoadTimerParameters(QVector<ButtonFTimer_DType>& Option, const
 	settings.endGroup();
 }
 //------------------------------------------------------------------------------
-void SaveManager::SaveConditionsParameters(const QVector<ButtonFCondition_DType>& Option, const QSettings& settings)
+void SaveManager::SaveConditionsParameters(const QVector<ButtonFCondition_DType>& Option, QSettings& settings)
 {
 	settings.beginGroup("KeyFCondition");
-	for (int i = 0; i < ParamTimer.size(); ++i)
+	for (int i = 0; i < Option.size(); ++i)
 	{
-		settings.setValue(QString("Activate%1").arg(i), ParamCondition[i].activate);
-		settings.setValue(QString("indexWindow%1").arg(i), ParamCondition[i].n_window);
-		settings.setValue(QString("indexButton%1").arg(i), ParamCondition[i].button);
-		settings.setValue(QString("Condition%1").arg(i), ParamCondition[i].condition);
-		settings.setValue(QString("PeriodPress%1").arg(i), ParamCondition[i].period);
-		settings.setValue(QString("NumPress%1").arg(i), ParamCondition[i].repeat);
-		settings.setValue(QString("DelayPress%1").arg(i), ParamCondition[i].pause);
-		settings.setValue(QString("Shift%1").arg(i), ParamCondition[i].shift);
-		settings.setValue(QString("Ctrl%1").arg(i), ParamCondition[i].ctrl);
-		settings.setValue(QString("Alt%1").arg(i), ParamCondition[i].alt);
+		settings.setValue(QString("Activate%1").arg(i), Option[i].activate);
+		settings.setValue(QString("indexWindow%1").arg(i), Option[i].n_window);
+		settings.setValue(QString("indexButton%1").arg(i), Option[i].button);
+		settings.setValue(QString("Condition%1").arg(i), Option[i].condition);
+		settings.setValue(QString("PeriodPress%1").arg(i), Option[i].period);
+		settings.setValue(QString("NumPress%1").arg(i), Option[i].repeat);
+		settings.setValue(QString("DelayPress%1").arg(i), Option[i].pause);
+		settings.setValue(QString("Shift%1").arg(i), Option[i].shift);
+		settings.setValue(QString("Ctrl%1").arg(i), Option[i].ctrl);
+		settings.setValue(QString("Alt%1").arg(i), Option[i].alt);
 	}
 	settings.endGroup();
 }
 //------------------------------------------------------------------------------
-void SaveManager::LoadConditionsParameters(QVector<ButtonFCondition_DType>& Option, const QSettings& settings)
+void SaveManager::LoadConditionsParameters(QVector<ButtonFCondition_DType>& Option, QSettings& settings)
 {
 	settings.beginGroup("KeyFCondition");
 	for (int i = 0; i < Option.size(); ++i)
@@ -97,24 +98,6 @@ void SaveManager::SaveAllOptions(
 	//--------------------------------------------------------------------------
 
 	settings_.sync();
-}
-//------------------------------------------------------------------------------
-void SaveManager::SaveTimerOptions(QString Path, const QVector<ButtonFTimer_DType>& Option)
-{
-	settings.beginGroup("KeyFTimer");
-	for (int i = 0; i < Option.size(); ++i)
-	{
-		settings.setValue(QString("Activate%1").arg(i), Option[i].activate);
-		settings.setValue(QString("indexWindow%1").arg(i), Option[i].n_window);
-		settings.setValue(QString("indexButton%1").arg(i), Option[i].button);
-		settings.setValue(QString("PeriodPress%1").arg(i), Option[i].period);
-		settings.setValue(QString("NumPress%1").arg(i), Option[i].repeat);
-		settings.setValue(QString("DelayPress%1").arg(i), Option[i].pause);
-		settings.setValue(QString("Shift%1").arg(i), Option[i].shift);
-		settings.setValue(QString("Ctrl%1").arg(i), Option[i].ctrl);
-		settings.setValue(QString("Alt%1").arg(i), Option[i].alt);
-	}
-	settings.endGroup();
 }
 
 //------------------------------------------------------------------------------
