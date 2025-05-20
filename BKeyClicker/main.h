@@ -1,5 +1,7 @@
 #pragma once
 #include <QObject>
+#include <QVectort>
+
 #include "ButtonProcedure.h"
 #include "MainWindow.h"
 #include "USBProcedure.h"

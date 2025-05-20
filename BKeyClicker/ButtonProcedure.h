@@ -4,6 +4,8 @@
 #include <QWaitCondition>
 #include <QApplication>
 
+#include <atomic>
+
 class ButtonProcedure : public QObject 
 {
     Q_OBJECT
@@ -23,7 +25,7 @@ signals:
     void error(QString err);
 
 private:
-    bool m_running;
+    std::atomic<bool> active;
     bool m_paused;
     QMutex m_mutex;
     QWaitCondition m_waitCondition;

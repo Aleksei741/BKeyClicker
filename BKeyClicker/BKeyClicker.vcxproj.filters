@@ -39,6 +39,12 @@
     <Filter Include="Source Files\USB">
       <UniqueIdentifier>{72c0b368-7840-4ffd-9659-3882e60d5ada}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\SaveParam">
+      <UniqueIdentifier>{f0e3cc94-3a1e-4a0e-99fe-534e852f4873}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SaveParam">
+      <UniqueIdentifier>{8786de26-f216-4497-a0c9-88a2a3b7efe3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -62,6 +68,9 @@
     <ClCompile Include="USB\USBProcedure.cpp">
       <Filter>Source Files\USB</Filter>
     </ClCompile>
+    <ClCompile Include="SaveParameters\SaveManager.cpp">
+      <Filter>Source Files\SaveParam</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -75,6 +84,9 @@
     </ClInclude>
     <ClInclude Include="ControlledEntities\cTimerButton.h">
       <Filter>Header Files\ControlledEntities</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveParameters\SaveManager.h">
+      <Filter>Header Files\SaveParam</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

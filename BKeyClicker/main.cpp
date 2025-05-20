@@ -1,5 +1,8 @@
 #include "main.h"
 
+QVector<ButtonFTimer_DType> OptButonTimer = QVector<ButtonFTimer_DType>(10);
+QVector<ButtonFCondition_DType> OptButtonFCondition = QVector<ButtonFCondition_DType>(10);
+
 int main(int argc, char* argv[])
 {
 	QApplication app(argc, argv);

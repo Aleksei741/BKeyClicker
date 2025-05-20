@@ -15,7 +15,7 @@ void ButtonProcedure::process()
 {
     qDebug() << "ButtonProcedure process start: " << QThread::currentThreadId();
 
-    while (m_running) 
+    while (active)
     {
         m_mutex.lock();
         while (m_paused) 
@@ -37,7 +37,7 @@ void ButtonProcedure::process()
 void ButtonProcedure::stop() 
 {
     m_mutex.lock();
-    m_running = false;
+    active = false;
     m_waitCondition.wakeAll();
     m_mutex.unlock();
 }

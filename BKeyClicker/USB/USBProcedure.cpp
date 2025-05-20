@@ -7,40 +7,10 @@
 USBProcedure::USBProcedure()
 {
     initialize();
-
-    threadWrite = new QThread;
-    writer = new USBDataWriter(&hDev);    
-    writer->moveToThread(threadWrite);
-    QObject::connect(threadWrite, &QThread::started, writer, &USBDataWriter::process);
-    QObject::connect(writer, &USBDataWriter::finished, threadWrite, &QThread::quit);
-    QObject::connect(writer, &USBDataWriter::finished, writer, &USBDataWriter::deleteLater);
-    QObject::connect(threadWrite, &QThread::finished, threadWrite, &QThread::deleteLater);    
-    threadWrite->start();
-
-    threadReade = new QThread;
-    reader = new USBDataReader(&hDev);
-    reader->moveToThread(threadReade);
-    QObject::connect(threadReade, &QThread::started, reader, &USBDataReader::process);
-    QObject::connect(reader, &USBDataReader::finished, threadReade, &QThread::quit);
-    QObject::connect(reader, &USBDataReader::finished, reader, &USBDataReader::deleteLater);
-    QObject::connect(threadReade, &QThread::finished, threadReade, &QThread::deleteLater);    
-    threadReade->start();
-
-    QObject::connect(writer, &USBDataWriter::writeError, this, &USBProcedure::handleReadeWriteError, Qt::DirectConnection);
-    QObject::connect(reader, &USBDataReader::readUSBError, this, &USBProcedure::handleReadeWriteError, Qt::DirectConnection);
-
 }
 //------------------------------------------------------------------------------
 USBProcedure::~USBProcedure() 
 {
-    writer->stop();
-    threadWrite->quit();
-    threadWrite->wait();
-
-    reader->stop();
-    threadReade->quit();
-    threadReade->wait();
-
     closeDevice(hDev);
 }
 //------------------------------------------------------------------------------
@@ -133,6 +103,8 @@ bool USBProcedure::openDevice(const QString& devicePath)
     {
         StatusConection = true;
         qDebug() << "USBProcedure CreateFile COMPLITED " << " Handle: " << hDev;
+        StartThreadWrite();
+        StartThreadReade();        
     }
     else
     {
@@ -146,9 +118,12 @@ void USBProcedure::closeDevice(HANDLE& hDev_)
 {    
     if (hDev_ != INVALID_HANDLE_VALUE)
     {
-        qDebug() << "USBProcedure CloseHandle " << " Handle: " << hDev_;
+        StopThreadWrite();
+        StopThreadReade();
+                
         CancelIo(hDev_);
         CloseHandle(hDev_);
+        qDebug() << "USBProcedure CloseHandle " << " Handle: " << hDev_;
     }
         
     hDev_ = INVALID_HANDLE_VALUE;
@@ -167,6 +142,64 @@ bool USBProcedure::writeData(QByteArray& data)
     return ret;
 }
 //------------------------------------------------------------------------------
+void USBProcedure::StartThreadWrite(void)
+{
+    threadWrite = new QThread;
+    writer = new USBDataWriter(&hDev);
+    writer->moveToThread(threadWrite);
+    QObject::connect(threadWrite, &QThread::started, writer, &USBDataWriter::process);
+    QObject::connect(writer, &USBDataWriter::finished, threadWrite, &QThread::quit);
+    QObject::connect(writer, &USBDataWriter::finished, writer, &USBDataWriter::deleteLater);
+    QObject::connect(threadWrite, &QThread::finished, threadWrite, &QThread::deleteLater);
+    threadWrite->start();
+
+    QObject::connect(writer, &USBDataWriter::writeError, this, &USBProcedure::handleReadeWriteError, Qt::DirectConnection);
+
+    qDebug() << "USBProcedure Start Write " << " writer: " << writer;
+}
+//------------------------------------------------------------------------------
+void USBProcedure::StopThreadWrite(void)
+{
+    if (writer)
+    {
+        writer->stop();
+        threadWrite->quit();
+        threadWrite->wait();
+        writer = nullptr;
+
+        qDebug() << "USBProcedure Stop Write ";
+    }
+}
+//------------------------------------------------------------------------------
+void USBProcedure::StartThreadReade(void)
+{
+    threadReade = new QThread;
+    reader = new USBDataReader(&hDev);
+    reader->moveToThread(threadReade);
+    QObject::connect(threadReade, &QThread::started, reader, &USBDataReader::process);
+    QObject::connect(reader, &USBDataReader::finished, threadReade, &QThread::quit);
+    QObject::connect(reader, &USBDataReader::finished, reader, &USBDataReader::deleteLater);
+    QObject::connect(threadReade, &QThread::finished, threadReade, &QThread::deleteLater);
+    threadReade->start();
+
+    QObject::connect(reader, &USBDataReader::readUSBError, this, &USBProcedure::handleReadeWriteError, Qt::DirectConnection);
+
+    qDebug() << "USBProcedure Start Reade " << " reader: " << reader;
+}
+//------------------------------------------------------------------------------
+void USBProcedure::StopThreadReade(void)
+{
+    if (reader)
+    {
+        reader->stop();
+        threadReade->quit();
+        threadReade->wait();
+        reader = nullptr;
+
+        qDebug() << "USBProcedure Stop Reade ";
+    }
+}
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 // slots
@@ -175,6 +208,8 @@ void USBProcedure::process()
 {
     while (active)
     {
+        QCoreApplication::processEvents();
+
         if (!StatusConection)
         {
             closeDevice(hDev);

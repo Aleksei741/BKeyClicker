@@ -43,26 +43,34 @@ void USBDataWriter::process()
             if(dataToWrite.isEmpty())
                 cvWrite.wait(&mutexWrite);
             
-            data = dataToWrite.dequeue();
+            if (!dataToWrite.isEmpty())
+                data = dataToWrite.dequeue();
+            else
+            {
+                data.clear();
+            }
         }
-               
-        ret = WriteFile(*hDev, data.data(), data.size(), &bytesWritten, &oWrite);
+        
+        if (!data.isEmpty())
+        {
+            ret = WriteFile(*hDev, data.data(), data.size(), &bytesWritten, &oWrite);
 
-        if (!ret)
-        {
-            DWORD err = GetLastError();
-            qDebug() << "USBDataWriter WriteFile failed. Error:" << err;
-            emit writeError();
-        }
-        else if (bytesWritten != static_cast<DWORD>(data.size()))
-        {
-            qDebug() << "USBDataWriter: Not all bytes written. Expected:"
-                << data.size() << ", Actual:" << bytesWritten;
-            emit writeError();
-        }
-        else
-        {
-            qDebug() << "USBDataWriter: Successfully written" << bytesWritten << "bytes";            
+            if (!ret)
+            {
+                DWORD err = GetLastError();
+                qDebug() << "USBDataWriter WriteFile failed. Error:" << err;
+                emit writeError();
+            }
+            else if (bytesWritten != static_cast<DWORD>(data.size()))
+            {
+                qDebug() << "USBDataWriter: Not all bytes written. Expected:"
+                    << data.size() << ", Actual:" << bytesWritten;
+                emit writeError();
+            }
+            else
+            {
+                qDebug() << "USBDataWriter: Successfully written" << bytesWritten << "bytes";
+            }
         }
     }
 
@@ -73,5 +81,6 @@ void USBDataWriter::process()
 void USBDataWriter::stop()
 {
     active = false;
+    cvWrite.notify_all();
 }
 //------------------------------------------------------------------------------

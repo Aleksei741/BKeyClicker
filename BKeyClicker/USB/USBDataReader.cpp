@@ -29,7 +29,7 @@ void USBDataReader::processData(const BYTE* data, DWORD size)
 void USBDataReader::process()
 {
     BYTE reportread[256];
-    DWORD bytesRead = 10;
+    DWORD bytesRead = 255;
 
     while (active)
     {
@@ -46,7 +46,7 @@ void USBDataReader::process()
                     emit readUSBError();
                 }
 
-                DWORD waitResult = WaitForSingleObject(oRead.hEvent, 1000);
+                DWORD waitResult = WaitForSingleObject(oRead.hEvent, 100);
 
                 if (waitResult == WAIT_OBJECT_0)
                 {

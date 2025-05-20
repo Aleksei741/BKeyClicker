@@ -47,6 +47,11 @@ public slots:
     void handleRecive(QByteArray data);
 
 private:
+    void StartThreadWrite();
+    void StopThreadWrite();
+    void StartThreadReade();
+    void StopThreadReade();
+
     HDEVINFO hDevInfo;  // Дескриптор набора устройств
     SP_DEVINFO_DATA dInf;   // Структура, содержащая информацию об устройстве (SP_DEVINFO_DATA).
     SP_DEVICE_INTERFACE_DATA dIntDat;   // Структура, описывающая интерфейс устройства
@@ -63,11 +68,11 @@ private:
 
     //Write
     QThread* threadWrite;
-    USBDataWriter* writer;
+    USBDataWriter* writer = nullptr;
 
     //Reade
     QThread* threadReade;
-    USBDataReader* reader;
+    USBDataReader* reader = nullptr;
     QMutex mutexReade;
     QByteArray ReadeData;
 };
