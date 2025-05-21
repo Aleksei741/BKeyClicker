@@ -120,10 +120,15 @@
     <QtMoc Include="USB\USBDataWriter.h" />
     <QtMoc Include="USB\USBProcedure.h" />
     <QtMoc Include="ButtonProcedure.h" />
+    <ClInclude Include="ControlledEntities\cCondotoinButton.h" />
+    <ClInclude Include="ControlledEntities\cKeyEmulator.h" />
+    <ClInclude Include="ControlledEntities\cMonitorScreen.h" />
     <ClInclude Include="ControlledEntities\cTimerButton.h" />
     <QtMoc Include="CustomWidgets\ListButtonComboBox.h" />
     <QtMoc Include="CustomWidgets\ListWindowComboBox.h" />
     <QtMoc Include="CustomWidgets\ConditionalComboBox.h" />
+    <ClInclude Include="ControlledEntities\IKeyEmulator.h" />
+    <ClInclude Include="ControlledEntities\IMonitorScreen.h" />
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="resource.h" />
@@ -131,6 +136,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ButtonProcedure.cpp" />
+    <ClCompile Include="cMonitorScreen.cpp" />
+    <ClCompile Include="ControlledEntities\cCondotoinButton.cpp" />
+    <ClCompile Include="ControlledEntities\cKeyEmulator.cpp" />
     <ClCompile Include="ControlledEntities\cTimerButton.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />

@@ -18,122 +18,102 @@ IKeyEmulator* cTimerButton::emulator = nullptr;
 //******************************************************************************
 // Class function
 //******************************************************************************
-
-cTimerButton::cTimerButton()
+cTimerButton::cTimerButton() :
+	activate(false),
+	ctrl(false),
+	alt(false),
+	shift(false),
+	button(0),
+	period(1000),
+	repeat(1),
+	pause(300)
+{}
+//------------------------------------------------------------------------------
+cTimerButton::cTimerButton(const ButtonFTimer_DType& ButtonFTimer) :
+	activate(ButtonFTimer.activate),
+	ctrl(ButtonFTimer.ctrl),
+	alt(ButtonFTimer.alt),
+	shift(ButtonFTimer.shift),
+	button(ButtonFTimer.button),
+	period(ButtonFTimer.period),
+	repeat(ButtonFTimer.repeat),
+	pause(ButtonFTimer.pause)
 {
 	timer.start();
 }
 //------------------------------------------------------------------------------
-cTimerButton::cTimerButton(quint16 button, quint32 period, quint32 pause, bool shift, bool alt, bool ctrl) : 
-	f_activate(true),
-	f_ctrl(ctrl),
-	f_alt(alt),
-	f_shift(shift),
-	m_button(button),
-	m_period(period),
-	m_repeat(1),
-	m_pause(pause)
+bool cTimerButton::click(const qint64& time_, quint16& delay) const
 {
-	timer.start();
-}
-//------------------------------------------------------------------------------
-QPair<quint32, bool> cTimerButton::click() const
-{
-	quint16 delay = 0;
-	bool Final = false;
+	delay = 0;
+	bool complited = true;
 
-	if (emulator == nullptr)		//if no emulator
-		return { 0, true };		//delay = 0, final = true
-
-	RWLock.lockForRead();
-	if (f_activate)
+	if (activate)
 	{
 		if (click_cnt == 0)	//start emulated
-			click_cnt = m_repeat;
+			click_cnt = repeat;
 
 		if (click_cnt)
 		{
-			if (timer.elapsed() > m_period)
+			if (time_ > click_time)
 			{
-				if (emulator->ClickKey(m_button, f_shift, f_alt, f_ctrl))
+				if (ClickKey(button, shift, alt, ctrl))
 				{
-					timer.restart();
+					click_time = time_ + period;
 
-					if (--click_cnt)	//final emulated
-						Final = true;
+					if (--click_cnt)
+						complited = false;
 
-					delay = m_pause;
+					delay = pause;
 				}	
-				else
-					Final = true;
 			}
-			else
-				Final = true;
 		}
-		else
-			Final = true;
 	}
 	else
-		Final = true;
-
-	RWLock.unlock();
+	{
+		click_cnt = 0;
+		click_time = 0;
+	}
 	
-	return { delay, Final };
+	return complited;
 }
 //------------------------------------------------------------------------------
 void cTimerButton::setActive(bool state)
 {
-	RWLock.lockForWrite();
-	f_activate = state;
-	RWLock.unlock();
+	activate = state;
 }
 //------------------------------------------------------------------------------
 void cTimerButton::setCtrl(bool state)
 {
-	RWLock.lockForWrite();
-	f_ctrl = state;
-	RWLock.unlock();
+	ctrl = state;
 }
 //------------------------------------------------------------------------------
 void cTimerButton::setAlt(bool state)
 {
-	RWLock.lockForWrite();
-	f_alt = state;
-	RWLock.unlock();
+	alt = state;
 }
 //------------------------------------------------------------------------------
 void cTimerButton::setShift(bool state) 
 {
-	RWLock.lockForWrite();
-	f_shift = state;
-	RWLock.unlock();
+	shift = state;
 }
 //------------------------------------------------------------------------------
 void cTimerButton::setIndexButton(quint16 index)
 {
-	RWLock.lockForWrite();
-	m_button = index;
-	RWLock.unlock();
+	button = index;
 }
 //------------------------------------------------------------------------------
 void cTimerButton::setPeriod(quint32 period)
 {
-	RWLock.lockForWrite();
-	m_period = period;
-	RWLock.unlock();
+	period = period;
 }
 //------------------------------------------------------------------------------
 void cTimerButton::setRepeat(quint16 repeate)
 {
-	RWLock.lockForWrite();
-	m_repeat = repeate;
-	RWLock.unlock();
+	repeat = repeate;
 }
 //------------------------------------------------------------------------------
 void cTimerButton::setPause(quint32 pause)
 {
-	RWLock.lockForWrite();
-	m_pause = pause;
-	RWLock.unlock();
+	pause = pause;
 }
 //------------------------------------------------------------------------------

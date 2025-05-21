@@ -71,6 +71,15 @@
     <ClCompile Include="SaveParameters\SaveManager.cpp">
       <Filter>Source Files\SaveParam</Filter>
     </ClCompile>
+    <ClCompile Include="ControlledEntities\cCondotoinButton.cpp">
+      <Filter>Source Files\ControlledEntities</Filter>
+    </ClCompile>
+    <ClCompile Include="ControlledEntities\cKeyEmulator.cpp">
+      <Filter>Source Files\ControlledEntities</Filter>
+    </ClCompile>
+    <ClCompile Include="cMonitorScreen.cpp">
+      <Filter>Source Files\ControlledEntities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -83,6 +92,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ControlledEntities\cTimerButton.h">
+      <Filter>Header Files\ControlledEntities</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlledEntities\cCondotoinButton.h">
+      <Filter>Header Files\ControlledEntities</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlledEntities\IKeyEmulator.h">
+      <Filter>Header Files\ControlledEntities</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlledEntities\cKeyEmulator.h">
+      <Filter>Header Files\ControlledEntities</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlledEntities\IMonitorScreen.h">
+      <Filter>Header Files\ControlledEntities</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlledEntities\cMonitorScreen.h">
       <Filter>Header Files\ControlledEntities</Filter>
     </ClInclude>
   </ItemGroup>

@@ -5,39 +5,43 @@
 #include <QPair>
 #include <optional>
 
-class IKeyEmulator
+#include "cKeyEmulator.h"
+
+struct ButtonFTimer_DType
 {
-public:
-	virtual bool ClickKey(quint16 indexKey, bool flagShift, bool flagAlt, bool flagCtrl) = 0;
-	virtual bool PressKey(quint16 indexKey, bool flagShift, bool flagAlt, bool flagCtrl) = 0;
-	virtual bool UnpressKey(void) = 0;
+	bool activate;
+	bool ctrl;
+	bool alt;
+	bool shift;
+	unsigned int n_window;
+	unsigned int button;
+	unsigned int period;
+	unsigned int repeat;
+	unsigned int pause;
 };
 
-class cTimerButton
+class cTimerButton : cKeyEmulator
 {
 	mutable unsigned int click_cnt = 0;
-	mutable QReadWriteLock RWLock;
-	static IKeyEmulator* emulator;
-	mutable QElapsedTimer timer;
-
+	mutable qint64 click_time = 0;
 protected:
-	bool f_activate;
-	bool f_ctrl;
-	bool f_alt;
-	bool f_shift;
-	quint16 m_button;
-	quint32 m_period;
-	quint16 m_repeat;
-	quint32 m_pause;
+	bool activate;
+	bool ctrl;
+	bool alt;
+	bool shift;
+	quint16 button;
+	quint32 period;
+	quint16 repeat;
+	quint32 pause;
 
 public:
 	cTimerButton();
-	cTimerButton(quint16 button, quint32 period, quint32 pause, bool shift, bool alt, bool ctrl);
+	cTimerButton(const ButtonFTimer_DType& ButtonFTimer);
 	~cTimerButton() = default;
 	cTimerButton(const cTimerButton& button) = default;
 	cTimerButton& operator= (const cTimerButton& button) = default;
 
-	QPair<quint32, bool> click() const;
+	virtual bool click(const qint64& time_, quint16& delay) const;
 
 	void setActive(bool state);
 	void setCtrl(bool state);
