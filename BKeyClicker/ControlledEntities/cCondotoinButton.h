@@ -2,6 +2,7 @@
 #include <QColor>
 #include <QPoint>
 
+#include "Definitions.h"
 #include "cTimerButton.h"
 #include "IKeyEmulator.h"
 
@@ -9,7 +10,7 @@ struct ButtonFCondition_DType : ButtonFTimer_DType
 {
 	QPoint pixel_position;
 	QColor color_set;
-	quint16 color_condition;
+	Condition_DType color_condition;
 };
 
 class cCondotoinButton : cTimerButton, cMonitorScreen
@@ -20,7 +21,7 @@ class cCondotoinButton : cTimerButton, cMonitorScreen
 protected:
 	QPoint pixel_position;
 	QColor color_set;
-	quint16 color_condition;
+	Condition_DType color_condition;
 
 public:
 	cCondotoinButton();
@@ -33,6 +34,10 @@ public:
 	
 	void setPixelPosition(const QPoint& position);
 	void setColor(const QColor& color);
-	void setCondition(quint16 state);
+	void setCondition(Condition_DType state);
+
+	QPoint getPixelPosition(void);
+	QColor getColor(void);
+	Condition_DType getCondition(void);
 };
 

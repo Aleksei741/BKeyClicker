@@ -1,7 +1,7 @@
 #include "ButtonProcedure.h"
 
 
-ButtonProcedure::ButtonProcedure() : active(true), m_paused(false)
+ButtonProcedure::ButtonProcedure() : active(true), mutexPause(false)
 {
     
 }
@@ -17,17 +17,19 @@ void ButtonProcedure::process()
 
     while (active)
     {
-        m_mutex.lock();
-        while (m_paused) 
+        mutexPause.lock();
+        while (paused)
         {
             qDebug() << "ButtonProcedure process pause";
-            m_waitCondition.wait(&m_mutex);
+            cvWait.wait(&mutexPause);
             qDebug() << "ButtonProcedure process begine";
         }
-        m_mutex.unlock();
+        mutexPause.unlock();
+
+        QCoreApplication::processEvents();
 
         qDebug() << "ButtonProcedure Working...";
-        QThread::msleep(1000);
+        QThread::msleep(1);
     }
 
     qDebug() << "ButtonProcedure process stop.";
@@ -36,21 +38,21 @@ void ButtonProcedure::process()
 
 void ButtonProcedure::stop() 
 {
-    m_mutex.lock();
+    mutexPause.lock();
     active = false;
-    m_waitCondition.wakeAll();
-    m_mutex.unlock();
+    cvWait.wakeAll();
+    mutexPause.unlock();
 }
 
 void ButtonProcedure::pause() 
 {
-    QMutexLocker locker(&m_mutex);
-    m_paused = true;
+    QMutexLocker locker(&mutexPause);
+    paused = true;
 }
 
 void ButtonProcedure::resume() 
 {
-    QMutexLocker locker(&m_mutex);
-    m_paused = false;
-    m_waitCondition.wakeAll();
+    QMutexLocker locker(&mutexPause);
+    paused = false;
+    cvWait.wakeAll();
 }

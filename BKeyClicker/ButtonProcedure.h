@@ -21,13 +21,12 @@ public slots:
     void resume();
 
 signals:
-    void finished();    
-    void error(QString err);
+    void finished();
 
 private:
     std::atomic<bool> active;
-    bool m_paused;
-    QMutex m_mutex;
-    QWaitCondition m_waitCondition;
+    std::atomic<bool> paused;
+    QMutex mutexPause;
+    QWaitCondition cvWait;
 };
 

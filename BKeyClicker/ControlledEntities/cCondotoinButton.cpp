@@ -81,8 +81,23 @@ void cCondotoinButton::setColor(const QColor& color)
 	color_set = color;
 }
 //------------------------------------------------------------------------------
-void cCondotoinButton::setCondition(quint16 state)
+void cCondotoinButton::setCondition(Condition_DType state)
 {
 	color_condition = state;
+}
+//------------------------------------------------------------------------------
+QPoint cCondotoinButton::getPixelPosition(void)
+{
+	retirn pixel_position;
+}
+//------------------------------------------------------------------------------
+QColor cCondotoinButton::getColor(void)
+{
+	retirn color_set;
+}
+//------------------------------------------------------------------------------
+Condition_DType cCondotoinButton::getCondition(void)
+{
+	retirn color_condition;
 }
 //------------------------------------------------------------------------------

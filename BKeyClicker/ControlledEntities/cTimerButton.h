@@ -6,6 +6,7 @@
 #include <optional>
 
 #include "cKeyEmulator.h"
+#include "Definitions.h"
 
 struct ButtonFTimer_DType
 {
@@ -13,8 +14,8 @@ struct ButtonFTimer_DType
 	bool ctrl;
 	bool alt;
 	bool shift;
-	unsigned int n_window;
-	unsigned int button;
+	nWindows_DType n_window;
+	Buttons_DType button;
 	unsigned int period;
 	unsigned int repeat;
 	unsigned int pause;
@@ -29,7 +30,8 @@ protected:
 	bool ctrl;
 	bool alt;
 	bool shift;
-	quint16 button;
+	nWindows_DType n_window;
+	Buttons_DType button;
 	quint32 period;
 	quint16 repeat;
 	quint32 pause;
@@ -47,9 +49,20 @@ public:
 	void setCtrl(bool state);
 	void setAlt(bool state);
 	void setShift(bool state);
-	void setIndexButton(quint16 index);
+	void setNWindow(nWindows_DType window);
+	void setIndexButton(Buttons_DType index);
 	void setPeriod(quint32 period);
 	void setRepeat(quint16 repeate);
 	void setPause(quint32 pause);
+
+	bool getActive(void);
+	bool getCtrl(void);
+	bool getAlt(void);
+	bool getShift(void);
+	nWindows_DType getNWindow(void);
+	Buttons_DType getIndexButton(void);
+	quint32 getPeriod(void);
+	quint16 getRepeat(void);
+	quint32 getPause(void);
 };
 
