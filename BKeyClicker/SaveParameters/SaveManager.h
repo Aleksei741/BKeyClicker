@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "main.h"
+#include "cCondotoinButton.h"
+#include "cTimerButton.h"
 
 class SaveManager : public QObject
 {

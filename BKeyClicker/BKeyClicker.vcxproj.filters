@@ -45,15 +45,15 @@
     <Filter Include="Source Files\SaveParam">
       <UniqueIdentifier>{8786de26-f216-4497-a0c9-88a2a3b7efe3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Types">
+      <UniqueIdentifier>{260c833b-d926-4a48-9af5-85a325c0b36c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MainWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ButtonProcedure.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ControlledEntities\cTimerButton.cpp">
@@ -77,8 +77,11 @@
     <ClCompile Include="ControlledEntities\cKeyEmulator.cpp">
       <Filter>Source Files\ControlledEntities</Filter>
     </ClCompile>
-    <ClCompile Include="cMonitorScreen.cpp">
-      <Filter>Source Files\ControlledEntities</Filter>
+    <ClCompile Include="EmulationOrchestrator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ControlledEntities\cMonitorScreen.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +112,12 @@
     <ClInclude Include="ControlledEntities\cMonitorScreen.h">
       <Filter>Header Files\ControlledEntities</Filter>
     </ClInclude>
+    <ClInclude Include="Types\ButtonFConditionTypes.h">
+      <Filter>Header Files\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="Types\ButtonFTimerTypes.h">
+      <Filter>Header Files\Types</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MainWindow.h">
@@ -123,9 +132,6 @@
     <QtMoc Include="CustomWidgets\ConditionalComboBox.h">
       <Filter>Header Files\CustomWidgets</Filter>
     </QtMoc>
-    <QtMoc Include="ButtonProcedure.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="USB\USBDataWriter.h">
       <Filter>Header Files\USB</Filter>
     </QtMoc>
@@ -137,6 +143,9 @@
     </QtMoc>
     <QtMoc Include="SaveParameters\SaveManager.h">
       <Filter>Header Files\SaveParam</Filter>
+    </QtMoc>
+    <QtMoc Include="EmulationOrchestrator.h">
+      <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

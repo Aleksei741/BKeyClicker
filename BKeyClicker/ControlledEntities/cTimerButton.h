@@ -6,22 +6,10 @@
 #include <optional>
 
 #include "cKeyEmulator.h"
+#include "ButtonFTimerTypes.h"
 #include "Definitions.h"
 
-struct ButtonFTimer_DType
-{
-	bool activate;
-	bool ctrl;
-	bool alt;
-	bool shift;
-	nWindows_DType n_window;
-	Buttons_DType button;
-	unsigned int period;
-	unsigned int repeat;
-	unsigned int pause;
-};
-
-class cTimerButton : cKeyEmulator
+class cTimerButton : virtual public cKeyEmulator
 {
 	mutable unsigned int click_cnt = 0;
 	mutable qint64 click_time = 0;
@@ -55,14 +43,14 @@ public:
 	void setRepeat(quint16 repeate);
 	void setPause(quint32 pause);
 
-	bool getActive(void);
-	bool getCtrl(void);
-	bool getAlt(void);
-	bool getShift(void);
-	nWindows_DType getNWindow(void);
-	Buttons_DType getIndexButton(void);
-	quint32 getPeriod(void);
-	quint16 getRepeat(void);
-	quint32 getPause(void);
+	bool getActive(void) const;
+	bool getCtrl(void) const;
+	bool getAlt(void) const;
+	bool getShift(void) const;
+	nWindows_DType getNWindow(void) const;
+	Buttons_DType getIndexButton(void) const;
+	quint32 getPeriod(void) const;
+	quint16 getRepeat(void) const;
+	quint32 getPause(void) const;
 };
 

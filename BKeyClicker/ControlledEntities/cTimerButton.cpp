@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 // Global
 //------------------------------------------------------------------------------
-IKeyEmulator* cTimerButton::emulator = nullptr;
 
 //------------------------------------------------------------------------------
 // Local
@@ -24,7 +23,7 @@ cTimerButton::cTimerButton() :
 	alt(false),
 	shift(false),
 	n_window(nWindows_DType::n1),
-	button(0),
+	button(Buttons_DType::L0),
 	period(1000),
 	repeat(1),
 	pause(300)
@@ -41,7 +40,7 @@ cTimerButton::cTimerButton(const ButtonFTimer_DType& ButtonFTimer) :
 	repeat(ButtonFTimer.repeat),
 	pause(ButtonFTimer.pause)
 {
-	timer.start();
+	
 }
 //------------------------------------------------------------------------------
 bool cTimerButton::click(const qint64& time_, quint16& delay) const
@@ -124,52 +123,47 @@ void cTimerButton::setPause(quint32 pause)
 	pause = pause;
 }
 //------------------------------------------------------------------------------
-bool cTimerButton::getActive(void)
+bool cTimerButton::getActive(void) const
 {
-	return active;
+	return activate;
 }
 //------------------------------------------------------------------------------
-bool cTimerButton::getCtrl(void)
+bool cTimerButton::getCtrl(void) const
 {
 	return ctrl;
 }
 //------------------------------------------------------------------------------
-bool cTimerButton::getAlt(void)
+bool cTimerButton::getAlt(void) const
 {
 	return alt;
 }
 //------------------------------------------------------------------------------
-bool cTimerButton::getShift(void)
+bool cTimerButton::getShift(void) const
 {
 	return shift;
 }
 //------------------------------------------------------------------------------
-bool cTimerButton::getShift(void)
-{
-	return shift;
-}
-//------------------------------------------------------------------------------
-nWindows_DType cTimerButton::getNWindow(void)
+nWindows_DType cTimerButton::getNWindow(void) const
 {
 	return n_window;
 }
 //------------------------------------------------------------------------------
-Buttons_DType cTimerButton::getIndexButton(void)
+Buttons_DType cTimerButton::getIndexButton(void) const
 {
 	return button;
 }
 //------------------------------------------------------------------------------
-quint32 cTimerButton::getPeriod(void)
+quint32 cTimerButton::getPeriod(void) const
 {
 	return period;
 }
 //------------------------------------------------------------------------------
-quint16 cTimerButton::getRepeat(void)
+quint16 cTimerButton::getRepeat(void) const
 {
 	return repeat;
 }
 //------------------------------------------------------------------------------
-quint32 cTimerButton::getPause(void)
+quint32 cTimerButton::getPause(void) const
 {
 	return pause;
 }

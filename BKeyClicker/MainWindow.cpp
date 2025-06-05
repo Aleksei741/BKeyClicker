@@ -1,5 +1,5 @@
 #include "MainWindow.h"
-
+//------------------------------------------------------------------------------
 MainWindow::MainWindow(int timerCount, int pixelCount, QWidget* parent)
 	: QWidget(parent)
 {
@@ -71,9 +71,9 @@ MainWindow::MainWindow(int timerCount, int pixelCount, QWidget* parent)
 	show();
 	
 }
-//============================================================================================
+//------------------------------------------------------------------------------
 MainWindow::~MainWindow() {}
-//============================================================================================
+//------------------------------------------------------------------------------
 QFrame* MainWindow::createWidgetsTimers()
 {
 	int cnt;
@@ -251,7 +251,7 @@ QFrame* MainWindow::createWidgetsTimers()
 
 	return scrollArea;
 }
-//============================================================================================
+//------------------------------------------------------------------------------
 QFrame* MainWindow::createWidgetsPixel()
 {
 	int cnt = 0;
@@ -485,7 +485,87 @@ QFrame* MainWindow::createWidgetsPixel()
 	scrollArea->setWidget(tabContent); // установить содержимое
 	return scrollArea;
 }
-//============================================================================================
+//------------------------------------------------------------------------------
+void MainWindow::SetGUITimerButton(qint32 num, const ButtonFTimer_DType& button_timer)
+{
+	if(button_timer.activate)
+		TimerCtrl[num].active->setCheckState(Qt::Checked);
+	else
+		TimerCtrl[num].active->setCheckState(Qt::Unchecked);
+
+	if (button_timer.ctrl)
+		TimerCtrl[num].ctrl->setCheckState(Qt::Checked);
+	else
+		TimerCtrl[num].ctrl->setCheckState(Qt::Unchecked);
+
+	if (button_timer.alt)
+		TimerCtrl[num].alt->setCheckState(Qt::Checked);
+	else
+		TimerCtrl[num].alt->setCheckState(Qt::Unchecked);
+
+	if (button_timer.shift)
+		TimerCtrl[num].shift->setCheckState(Qt::Checked);
+	else
+		TimerCtrl[num].shift->setCheckState(Qt::Unchecked);
+
+	TimerCtrl[num].n_window->setCurrentIndex(static_cast<int>(button_timer.n_window));
+	TimerCtrl[num].button->setCurrentIndex(static_cast<int>(button_timer.button));
+
+	TimerCtrl[num].repeat->blockSignals(true);
+	TimerCtrl[num].repeat->setValue(button_timer.repeat);
+	TimerCtrl[num].repeat->blockSignals(false);
+
+	TimerCtrl[num].period->blockSignals(true);
+	TimerCtrl[num].period->setValue(button_timer.period);
+	TimerCtrl[num].period->blockSignals(false);
+
+	TimerCtrl[num].pause->blockSignals(true);
+	TimerCtrl[num].pause->setValue(button_timer.pause);
+	TimerCtrl[num].pause->blockSignals(false);
+}
+//------------------------------------------------------------------------------
+void MainWindow::SetGUIConditionButton(qint32 num, const ButtonFCondition_DType& button_condition)
+{
+	if (button_condition.activate)
+		PixelCtrl[num].active->setCheckState(Qt::Checked);
+	else
+		PixelCtrl[num].active->setCheckState(Qt::Unchecked);
+
+	if (button_condition.ctrl)
+		PixelCtrl[num].ctrl->setCheckState(Qt::Checked);
+	else
+		PixelCtrl[num].ctrl->setCheckState(Qt::Unchecked);
+
+	if (button_condition.alt)
+		PixelCtrl[num].alt->setCheckState(Qt::Checked);
+	else
+		PixelCtrl[num].alt->setCheckState(Qt::Unchecked);
+
+	if (button_condition.shift)
+		PixelCtrl[num].shift->setCheckState(Qt::Checked);
+	else
+		PixelCtrl[num].shift->setCheckState(Qt::Unchecked);
+
+	PixelCtrl[num].n_window->setCurrentIndex(static_cast<int>(button_condition.n_window));
+	PixelCtrl[num].button->setCurrentIndex(static_cast<int>(button_condition.button));
+
+	PixelCtrl[num].repeat->blockSignals(true);
+	PixelCtrl[num].repeat->setValue(button_condition.repeat);
+	PixelCtrl[num].repeat->blockSignals(false);
+
+	PixelCtrl[num].period->blockSignals(true);
+	PixelCtrl[num].period->setValue(button_condition.period);
+	PixelCtrl[num].period->blockSignals(false);
+
+	PixelCtrl[num].pause->blockSignals(true);
+	PixelCtrl[num].pause->setValue(button_condition.pause);
+	PixelCtrl[num].pause->blockSignals(false);
+}
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+// slots
+//------------------------------------------------------------------------------
 void MainWindow::handleStatusConnection(bool status)
 {
 	if(status)
@@ -493,4 +573,4 @@ void MainWindow::handleStatusConnection(bool status)
 	else
 		imageUSBLabel->hide();
 }
-//============================================================================================
+//------------------------------------------------------------------------------

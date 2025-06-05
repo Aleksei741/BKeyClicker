@@ -3,17 +3,12 @@
 #include <QPoint>
 
 #include "Definitions.h"
+#include "ButtonFConditionTypes.h"
 #include "cTimerButton.h"
 #include "IKeyEmulator.h"
+#include "cMonitorScreen.h"
 
-struct ButtonFCondition_DType : ButtonFTimer_DType
-{
-	QPoint pixel_position;
-	QColor color_set;
-	Condition_DType color_condition;
-};
-
-class cCondotoinButton : cTimerButton, cMonitorScreen
+class cCondotoinButton : public cTimerButton, virtual cMonitorScreen, virtual cKeyEmulator
 {
 	mutable unsigned int click_cnt = 0;
 	mutable qint64 click_time = 0;
@@ -36,8 +31,8 @@ public:
 	void setColor(const QColor& color);
 	void setCondition(Condition_DType state);
 
-	QPoint getPixelPosition(void);
-	QColor getColor(void);
-	Condition_DType getCondition(void);
+	QPoint getPixelPosition(void) const;
+	QColor getColor(void) const;
+	Condition_DType getCondition(void) const;
 };
 

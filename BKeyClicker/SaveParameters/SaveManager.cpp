@@ -15,8 +15,8 @@ void SaveManager::SaveTimerParameters(const QVector<ButtonFTimer_DType>& Option,
 	for (int i = 0; i < Option.size(); ++i)
 	{
 		settings.setValue(	QString("Activate%1").arg(i),		Option[i].activate);
-		settings.setValue(	QString("indexWindow%1").arg(i),	Option[i].n_window);
-		settings.setValue(	QString("indexButton%1").arg(i),	Option[i].button);
+		settings.setValue(	QString("indexWindow%1").arg(i),	static_cast<int>(Option[i].n_window));
+		settings.setValue(	QString("indexButton%1").arg(i),	static_cast<int>(Option[i].button));
 		settings.setValue(	QString("PeriodPress%1").arg(i),	Option[i].period);
 		settings.setValue(	QString("NumPress%1").arg(i),		Option[i].repeat);
 		settings.setValue(	QString("DelayPress%1").arg(i),		Option[i].pause);
@@ -33,8 +33,8 @@ void SaveManager::LoadTimerParameters(QVector<ButtonFTimer_DType>& Option, QSett
 	for (int i = 0; i < Option.size(); ++i)
 	{
 		Option[i].activate = settings.value(QString("Activate%1").arg(i), false).toBool();
-		Option[i].n_window = settings.value(QString("indexWindow%1").arg(i), 0).toBool();
-		Option[i].button = settings.value(QString("indexButton%1").arg(i), 0).toInt();
+		Option[i].n_window = static_cast<nWindows_DType>(settings.value(QString("indexWindow%1").arg(i), 0).toBool());
+		Option[i].button = static_cast<Buttons_DType>(settings.value(QString("indexButton%1").arg(i), 0).toInt());
 		Option[i].period = settings.value(QString("PeriodPress%1").arg(i), 1000).toInt();
 		Option[i].repeat = settings.value(QString("NumPress%1").arg(i), 1).toInt();
 		Option[i].pause = settings.value(QString("DelayPress%1").arg(i), 500).toInt();
@@ -51,9 +51,9 @@ void SaveManager::SaveConditionsParameters(const QVector<ButtonFCondition_DType>
 	for (int i = 0; i < Option.size(); ++i)
 	{
 		settings.setValue(QString("Activate%1").arg(i), Option[i].activate);
-		settings.setValue(QString("indexWindow%1").arg(i), Option[i].n_window);
-		settings.setValue(QString("indexButton%1").arg(i), Option[i].button);
-		settings.setValue(QString("Condition%1").arg(i), Option[i].condition);
+		settings.setValue(QString("indexWindow%1").arg(i), static_cast<int>(Option[i].n_window));
+		settings.setValue(QString("indexButton%1").arg(i), static_cast<int>(Option[i].button));
+		settings.setValue(QString("Condition%1").arg(i), static_cast<int>(Option[i].color_condition));
 		settings.setValue(QString("PeriodPress%1").arg(i), Option[i].period);
 		settings.setValue(QString("NumPress%1").arg(i), Option[i].repeat);
 		settings.setValue(QString("DelayPress%1").arg(i), Option[i].pause);
@@ -70,9 +70,9 @@ void SaveManager::LoadConditionsParameters(QVector<ButtonFCondition_DType>& Opti
 	for (int i = 0; i < Option.size(); ++i)
 	{
 		Option[i].activate = settings.value(QString("Activate%1").arg(i), false).toBool();
-		Option[i].n_window = settings.value(QString("indexWindow%1").arg(i), 0).toBool();
-		Option[i].button = settings.value(QString("indexButton%1").arg(i), 0).toInt();
-		Option[i].condition = settings.value(QString("Condition%1").arg(i), 0).toInt();
+		Option[i].n_window = static_cast<nWindows_DType>(settings.value(QString("indexWindow%1").arg(i), 0).toBool());
+		Option[i].button = static_cast<Buttons_DType>(settings.value(QString("indexButton%1").arg(i), 0).toInt());
+		Option[i].color_condition = static_cast<Condition_DType>(settings.value(QString("Condition%1").arg(i), 0).toInt());
 		Option[i].period = settings.value(QString("PeriodPress%1").arg(i), 1000).toInt();
 		Option[i].repeat = settings.value(QString("NumPress%1").arg(i), 1).toInt();
 		Option[i].pause = settings.value(QString("DelayPress%1").arg(i), 500).toInt();

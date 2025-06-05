@@ -19,6 +19,7 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QLineEdit>
+#include <QColor>
 #include "ListButtonComboBox.h"
 #include "ListWindowComboBox.h"
 #include "ConditionalComboBox.h"
@@ -27,8 +28,8 @@
 #include <QVariant>
 
 #include "Definitions.h"
-
-constexpr qint8 NumItemsTimerCtrl = 10;
+#include "ButtonFTimerTypes.h"
+#include "ButtonFConditionTypes.h"
 
 class MainWindow : public QWidget
 {
@@ -69,6 +70,10 @@ class MainWindow : public QWidget
 public:
 	MainWindow(int timerCount, int pixelCount, QWidget* parent = nullptr);
 	~MainWindow();
+
+	void SetGUITimerButton(qint32 num, const ButtonFTimer_DType& button_timer);
+
+	void SetGUIConditionButton(qint32 num, const ButtonFCondition_DType& button_condition);
 
 signals: 
 	void elementTimerChanged(const MainWindowSignal_DType signal, const QVariant& value, int rowIndex);

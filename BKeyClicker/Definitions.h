@@ -95,3 +95,4 @@ enum class MainWindowSignal_DType
     Active, Window, Button, Conditional, Period, Repeate, 
     Pause, Ctrl, Alt, Shift,
 };
+Q_DECLARE_METATYPE(MainWindowSignal_DType)

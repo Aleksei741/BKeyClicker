@@ -1,8 +1,20 @@
 #pragma once
+#include "Definitions.h"
 
 class IKeyEmulator
 {
-	virtual bool ClickKey(quint16 indexKey, bool flagShift, bool flagAlt, bool flagCtrl) = 0;
-	virtual bool PressKey(quint16 indexKey, bool flagShift, bool flagAlt, bool flagCtrl) = 0;
-	virtual bool UnpressKey(quint16 indexKey) = 0;
+public:
+	virtual ~IKeyEmulator() = default;
+
+	virtual bool ClickKey(const Buttons_DType indexKey, 
+		const bool flagShift, 
+		const bool flagAlt, 
+		const bool flagCtrl) = 0;
+
+	virtual bool PressKey(const Buttons_DType indexKey, 
+		const bool flagShift, 
+		const bool flagAlt, 
+		const bool flagCtrl) = 0;
+
+	virtual bool UnpressKey(const Buttons_DType indexKey) = 0;
 };

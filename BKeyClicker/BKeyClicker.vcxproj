@@ -68,7 +68,7 @@
     <ClCompile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)\CustomWidgets;$(ProjectDir)\ControlledEntities;$(ProjectDir)\SaveParameters;$(ProjectDir)\USB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\CustomWidgets;$(ProjectDir)\ControlledEntities;$(ProjectDir)\SaveParameters;$(ProjectDir)\USB;$(ProjectDir)\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
       <PreprocessorDefinitions>QT_NO_DEBUG_OUTPUT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -80,7 +80,7 @@
     <ClCompile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)\CustomWidgets;$(ProjectDir)\ControlledEntities;$(ProjectDir)\USB;$(ProjectDir)\SaveParameters;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\CustomWidgets;$(ProjectDir)\ControlledEntities;$(ProjectDir)\USB;$(ProjectDir)\SaveParameters;$(ProjectDir)\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>D:\ProgramFiles\Qt\vcpkg\vcpkg_installed\x64-windows-static\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -115,11 +115,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Types\ButtonFConditionTypes.h" />
+    <ClInclude Include="Types\ButtonFTimerTypes.h" />
     <QtMoc Include="SaveParameters\SaveManager.h" />
     <QtMoc Include="USB\USBDataReader.h" />
     <QtMoc Include="USB\USBDataWriter.h" />
     <QtMoc Include="USB\USBProcedure.h" />
-    <QtMoc Include="ButtonProcedure.h" />
+    <QtMoc Include="EmulationOrchestrator.h" />
     <ClInclude Include="ControlledEntities\cCondotoinButton.h" />
     <ClInclude Include="ControlledEntities\cKeyEmulator.h" />
     <ClInclude Include="ControlledEntities\cMonitorScreen.h" />
@@ -135,10 +137,10 @@
     <QtMoc Include="MainWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ButtonProcedure.cpp" />
-    <ClCompile Include="cMonitorScreen.cpp" />
+    <ClCompile Include="EmulationOrchestrator.cpp" />
     <ClCompile Include="ControlledEntities\cCondotoinButton.cpp" />
     <ClCompile Include="ControlledEntities\cKeyEmulator.cpp" />
+    <ClCompile Include="ControlledEntities\cMonitorScreen.cpp" />
     <ClCompile Include="ControlledEntities\cTimerButton.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />

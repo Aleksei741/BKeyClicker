@@ -19,10 +19,10 @@
 // Class function
 //******************************************************************************
 cCondotoinButton::cCondotoinButton() :
-	cTimerButton(ButtonFTimer_DType{false, false, false, false, 0, 1000, 1, 300}),
+	cTimerButton(ButtonFTimer_DType{false, false, false, false, nWindows_DType::n1, Buttons_DType::L0, 1000, 1, 300}),
 	pixel_position(QPoint(0, 0)),
 	color_set(Qt::black),
-	color_condition(ButtonFTimer.alt)
+	color_condition(Condition_DType::Equal)
 {}
 //------------------------------------------------------------------------------
 cCondotoinButton::cCondotoinButton(const ButtonFCondition_DType& ButtonFCondition) :
@@ -32,7 +32,7 @@ cCondotoinButton::cCondotoinButton(const ButtonFCondition_DType& ButtonFConditio
 	color_condition(ButtonFCondition.color_condition)
 {}
 //------------------------------------------------------------------------------
-bool cCondotoinButton::click(const qint64& time_, quint16& delay) const override
+bool cCondotoinButton::click(const qint64& time_, quint16& delay) const
 {
 	delay = 0;
 	bool complited = true;
@@ -86,18 +86,18 @@ void cCondotoinButton::setCondition(Condition_DType state)
 	color_condition = state;
 }
 //------------------------------------------------------------------------------
-QPoint cCondotoinButton::getPixelPosition(void)
+QPoint cCondotoinButton::getPixelPosition(void) const
 {
-	retirn pixel_position;
+	return pixel_position;
 }
 //------------------------------------------------------------------------------
-QColor cCondotoinButton::getColor(void)
+QColor cCondotoinButton::getColor(void) const
 {
-	retirn color_set;
+	return color_set;
 }
 //------------------------------------------------------------------------------
-Condition_DType cCondotoinButton::getCondition(void)
+Condition_DType cCondotoinButton::getCondition(void) const
 {
-	retirn color_condition;
+	return color_condition;
 }
 //------------------------------------------------------------------------------

@@ -6,13 +6,13 @@
 
 #include <atomic>
 
-class ButtonProcedure : public QObject 
+class EmulationOrchestrator : public QObject 
 {
     Q_OBJECT
 
 public:
-    ButtonProcedure();
-    ~ButtonProcedure();
+    EmulationOrchestrator();
+    ~EmulationOrchestrator();
 
 public slots:
     void process();
@@ -28,5 +28,7 @@ private:
     std::atomic<bool> paused;
     QMutex mutexPause;
     QWaitCondition cvWait;
+
+    qint32 EmulationMachine(void);
 };
 
