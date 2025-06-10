@@ -8,7 +8,7 @@
 #include "IKeyEmulator.h"
 #include "cMonitorScreen.h"
 
-class cCondotoinButton : public cTimerButton, virtual cMonitorScreen, virtual cKeyEmulator
+class cConditionButton : public cTimerButton, virtual cMonitorScreen, virtual cKeyEmulator
 {
 	mutable unsigned int click_cnt = 0;
 	mutable qint64 click_time = 0;
@@ -19,11 +19,11 @@ protected:
 	Condition_DType color_condition;
 
 public:
-	cCondotoinButton();
-	cCondotoinButton(const ButtonFCondition_DType& ButtonFCondition);
-	~cCondotoinButton() = default;
-	cCondotoinButton(const cCondotoinButton& button) = default;
-	cCondotoinButton& operator= (const cCondotoinButton& button) = default;
+	cConditionButton();
+	cConditionButton(const ButtonFCondition_DType& ButtonFCondition);
+	~cConditionButton() = default;
+	cConditionButton(const cConditionButton& button) = default;
+	cConditionButton& operator= (const cConditionButton& button) = default;
 
 	bool click(const qint64& time_, quint16& delay) const override;
 	

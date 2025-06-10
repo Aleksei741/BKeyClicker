@@ -108,19 +108,19 @@ void cTimerButton::setNWindow(nWindows_DType window)
 	n_window = window;
 }
 //------------------------------------------------------------------------------
-void cTimerButton::setPeriod(quint32 period)
+void cTimerButton::setPeriod(quint32 per)
 {
-	period = period;
+	period = per;
 }
 //------------------------------------------------------------------------------
-void cTimerButton::setRepeat(quint16 repeate)
+void cTimerButton::setRepeat(quint16 rep)
 {
-	repeat = repeate;
+	repeat = rep;
 }
 //------------------------------------------------------------------------------
-void cTimerButton::setPause(quint32 pause)
+void cTimerButton::setPause(quint32 p)
 {
-	pause = pause;
+	pause = p;
 }
 //------------------------------------------------------------------------------
 bool cTimerButton::getActive(void) const

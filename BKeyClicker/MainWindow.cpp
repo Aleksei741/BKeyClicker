@@ -488,28 +488,41 @@ QFrame* MainWindow::createWidgetsPixel()
 //------------------------------------------------------------------------------
 void MainWindow::SetGUITimerButton(qint32 num, const ButtonFTimer_DType& button_timer)
 {
+	TimerCtrl[num].active->blockSignals(true);
 	if(button_timer.activate)
 		TimerCtrl[num].active->setCheckState(Qt::Checked);
 	else
 		TimerCtrl[num].active->setCheckState(Qt::Unchecked);
+	TimerCtrl[num].active->blockSignals(false);
 
+	TimerCtrl[num].ctrl->blockSignals(true);
 	if (button_timer.ctrl)
 		TimerCtrl[num].ctrl->setCheckState(Qt::Checked);
 	else
 		TimerCtrl[num].ctrl->setCheckState(Qt::Unchecked);
+	TimerCtrl[num].ctrl->blockSignals(false);
 
+	TimerCtrl[num].alt->blockSignals(true);
 	if (button_timer.alt)
 		TimerCtrl[num].alt->setCheckState(Qt::Checked);
 	else
 		TimerCtrl[num].alt->setCheckState(Qt::Unchecked);
+	TimerCtrl[num].alt->blockSignals(false);
 
+	TimerCtrl[num].shift->blockSignals(true);
 	if (button_timer.shift)
 		TimerCtrl[num].shift->setCheckState(Qt::Checked);
 	else
 		TimerCtrl[num].shift->setCheckState(Qt::Unchecked);
+	TimerCtrl[num].shift->blockSignals(false);
 
+	TimerCtrl[num].n_window->blockSignals(true);
 	TimerCtrl[num].n_window->setCurrentIndex(static_cast<int>(button_timer.n_window));
+	TimerCtrl[num].n_window->blockSignals(false);
+
+	TimerCtrl[num].button->blockSignals(true);
 	TimerCtrl[num].button->setCurrentIndex(static_cast<int>(button_timer.button));
+	TimerCtrl[num].button->blockSignals(false);
 
 	TimerCtrl[num].repeat->blockSignals(true);
 	TimerCtrl[num].repeat->setValue(button_timer.repeat);
@@ -526,28 +539,45 @@ void MainWindow::SetGUITimerButton(qint32 num, const ButtonFTimer_DType& button_
 //------------------------------------------------------------------------------
 void MainWindow::SetGUIConditionButton(qint32 num, const ButtonFCondition_DType& button_condition)
 {
+	PixelCtrl[num].active->blockSignals(true);
 	if (button_condition.activate)
 		PixelCtrl[num].active->setCheckState(Qt::Checked);
 	else
 		PixelCtrl[num].active->setCheckState(Qt::Unchecked);
+	PixelCtrl[num].active->blockSignals(false);
 
+	PixelCtrl[num].ctrl->blockSignals(true);
 	if (button_condition.ctrl)
 		PixelCtrl[num].ctrl->setCheckState(Qt::Checked);
 	else
 		PixelCtrl[num].ctrl->setCheckState(Qt::Unchecked);
+	PixelCtrl[num].ctrl->blockSignals(false);
 
+	PixelCtrl[num].alt->blockSignals(true);
 	if (button_condition.alt)
 		PixelCtrl[num].alt->setCheckState(Qt::Checked);
 	else
 		PixelCtrl[num].alt->setCheckState(Qt::Unchecked);
+	PixelCtrl[num].alt->blockSignals(false);
 
+	PixelCtrl[num].shift->blockSignals(true);
 	if (button_condition.shift)
 		PixelCtrl[num].shift->setCheckState(Qt::Checked);
 	else
 		PixelCtrl[num].shift->setCheckState(Qt::Unchecked);
+	PixelCtrl[num].shift->blockSignals(false);
 
+	PixelCtrl[num].n_window->blockSignals(true);
 	PixelCtrl[num].n_window->setCurrentIndex(static_cast<int>(button_condition.n_window));
+	PixelCtrl[num].n_window->blockSignals(false);
+
+	PixelCtrl[num].button->blockSignals(true);
 	PixelCtrl[num].button->setCurrentIndex(static_cast<int>(button_condition.button));
+	PixelCtrl[num].button->blockSignals(false);
+
+	PixelCtrl[num].conditional->blockSignals(true);
+	PixelCtrl[num].conditional->setCurrentIndex(static_cast<int>(button_condition.color_condition));
+	PixelCtrl[num].conditional->blockSignals(false);
 
 	PixelCtrl[num].repeat->blockSignals(true);
 	PixelCtrl[num].repeat->setValue(button_condition.repeat);

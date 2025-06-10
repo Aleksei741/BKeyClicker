@@ -71,7 +71,7 @@
     <ClCompile Include="SaveParameters\SaveManager.cpp">
       <Filter>Source Files\SaveParam</Filter>
     </ClCompile>
-    <ClCompile Include="ControlledEntities\cCondotoinButton.cpp">
+    <ClCompile Include="ControlledEntities\cConditionButton.cpp">
       <Filter>Source Files\ControlledEntities</Filter>
     </ClCompile>
     <ClCompile Include="ControlledEntities\cKeyEmulator.cpp">
@@ -97,7 +97,7 @@
     <ClInclude Include="ControlledEntities\cTimerButton.h">
       <Filter>Header Files\ControlledEntities</Filter>
     </ClInclude>
-    <ClInclude Include="ControlledEntities\cCondotoinButton.h">
+    <ClInclude Include="ControlledEntities\cConditionButton.h">
       <Filter>Header Files\ControlledEntities</Filter>
     </ClInclude>
     <ClInclude Include="ControlledEntities\IKeyEmulator.h">

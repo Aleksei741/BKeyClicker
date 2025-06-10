@@ -5,7 +5,7 @@
 #include "ButtonFConditionTypes.h"
 #include "ButtonFTimerTypes.h"
 #include "cTimerButton.h"
-#include "cCondotoinButton.h"
+#include "cConditionButton.h"
 //******************************************************************************
 // Variables
 //******************************************************************************
@@ -17,7 +17,7 @@
 // Local Variable
 //------------------------------------------------------------------------------
 QVector<cTimerButton> vTimerButton = QVector<cTimerButton>(10);
-QVector<cCondotoinButton> vCondotoinButton = QVector<cCondotoinButton>(10);
+QVector<cConditionButton> vCondotoinButton = QVector<cConditionButton>(10);
 
 //------------------------------------------------------------------------------
 // Local Class
@@ -25,11 +25,16 @@ QVector<cCondotoinButton> vCondotoinButton = QVector<cCondotoinButton>(10);
 MainWindow* window;
 USBProcedure* USBProcess;
 EmulationOrchestrator* buttonProcess;
+SaveManager* saver;
 //******************************************************************************
 // Function prototype
 //******************************************************************************
 void CreateMainWindows(const QVector<cTimerButton>& vTButton,
-    const QVector<cCondotoinButton>& vCButton);
+    const QVector<cConditionButton>& vCButton);
+void StartUSBProcedure(void);
+void StartButtonProcedure(void);
+void StartSaveProcedure(QVector<cTimerButton>& vTButton,
+    QVector<cConditionButton>& vCButton);
 //******************************************************************************
 // Function
 //******************************************************************************
@@ -37,31 +42,16 @@ int main(int argc, char* argv[])
 {
 	QApplication app(argc, argv);
 
-    QThread* threadUSBProcess = new QThread;
-    USBProcess = new USBProcedure();
-    USBProcess->moveToThread(threadUSBProcess);
-    QObject::connect(threadUSBProcess, &QThread::started, USBProcess, &USBProcedure::process);
-    QObject::connect(USBProcess, &USBProcedure::finished, threadUSBProcess, &QThread::quit);
-    QObject::connect(USBProcess, &USBProcedure::finished, USBProcess, &USBProcedure::deleteLater);
-    QObject::connect(threadUSBProcess, &QThread::finished, threadUSBProcess, &QThread::deleteLater);
-    threadUSBProcess->start();
-
-    QThread* threadButtonProcess = new QThread;
-    buttonProcess = new EmulationOrchestrator();
-    buttonProcess->moveToThread(threadButtonProcess);
-    QObject::connect(threadButtonProcess, &QThread::started, buttonProcess, &EmulationOrchestrator::process);
-    QObject::connect(buttonProcess, &EmulationOrchestrator::finished, threadButtonProcess, &QThread::quit);
-    QObject::connect(buttonProcess, &EmulationOrchestrator::finished, buttonProcess, &EmulationOrchestrator::deleteLater);
-    QObject::connect(threadButtonProcess, &QThread::finished, threadButtonProcess, &QThread::deleteLater);
-    threadButtonProcess->start();
-    		
+    StartSaveProcedure(vTimerButton, vCondotoinButton);
+    StartUSBProcedure();
+    StartButtonProcedure();    
     CreateMainWindows(vTimerButton, vCondotoinButton);
 
 	return app.exec();
 }
 //------------------------------------------------------------------------------
 void CreateMainWindows(const QVector<cTimerButton>& vTButton,
-    const QVector<cCondotoinButton>& vCButton)
+    const QVector<cConditionButton>& vCButton)
 {
     window = new MainWindow(vTButton.size(), vCButton.size());
     
@@ -101,9 +91,50 @@ void CreateMainWindows(const QVector<cTimerButton>& vTButton,
 
         window->SetGUIConditionButton(num, button);
     }
-
-
     window->show();
 
-    QObject::connect(USBProcess, &USBProcedure::GUISetStatusConection, window, &MainWindow::handleStatusConnection);    
+    QObject::connect(USBProcess, &USBProcedure::GUISetStatusConection, 
+        window, &MainWindow::handleStatusConnection);    
+    QObject::connect(window, &MainWindow::elementTimerChanged, 
+        buttonProcess, &EmulationOrchestrator::UpdateParametersButtonTimer, 
+        Qt::DirectConnection);
+    QObject::connect(window, &MainWindow::elementPixelChanged, 
+        buttonProcess, &EmulationOrchestrator::UpdateParametersButtonCondition, 
+        Qt::DirectConnection);
+}
+//------------------------------------------------------------------------------
+void StartUSBProcedure(void)
+{
+    QThread* threadUSBProcess = new QThread;
+    USBProcess = new USBProcedure();
+    USBProcess->moveToThread(threadUSBProcess);
+    QObject::connect(threadUSBProcess, &QThread::started, USBProcess, &USBProcedure::process);
+    QObject::connect(USBProcess, &USBProcedure::finished, threadUSBProcess, &QThread::quit);
+    QObject::connect(USBProcess, &USBProcedure::finished, USBProcess, &USBProcedure::deleteLater);
+    QObject::connect(threadUSBProcess, &QThread::finished, threadUSBProcess, &QThread::deleteLater);
+    threadUSBProcess->start();
+}
+//------------------------------------------------------------------------------
+void StartButtonProcedure(void)
+{
+    QThread* threadButtonProcess = new QThread;
+    buttonProcess = new EmulationOrchestrator(vTimerButton, vCondotoinButton);
+    buttonProcess->moveToThread(threadButtonProcess);
+    QObject::connect(threadButtonProcess, &QThread::started, buttonProcess, &EmulationOrchestrator::process);
+    QObject::connect(buttonProcess, &EmulationOrchestrator::finished, threadButtonProcess, &QThread::quit);
+    QObject::connect(buttonProcess, &EmulationOrchestrator::finished, buttonProcess, &EmulationOrchestrator::deleteLater);
+    QObject::connect(threadButtonProcess, &QThread::finished, threadButtonProcess, &QThread::deleteLater);
+    threadButtonProcess->start();
+
+    QObject::connect(buttonProcess, &EmulationOrchestrator::SaveParametersButtonTimer,
+        saver, &SaveManager::handleUpdateDefaultParamsFTimer);
+    QObject::connect(buttonProcess, &EmulationOrchestrator::SaveParametersButtonCondition,
+        saver, &SaveManager::handleUpdateDefaultParamsFCondition);
+}
+//------------------------------------------------------------------------------
+void StartSaveProcedure(QVector<cTimerButton>& vTButton,
+    QVector<cConditionButton>& vCButton)
+{
+    saver = new SaveManager();
+    saver->DefaultLoadOptions(vTButton, vCButton);
 }

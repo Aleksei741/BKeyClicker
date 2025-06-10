@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "main.h"
-#include "cCondotoinButton.h"
+#include "cConditionButton.h"
 #include "cTimerButton.h"
 
 class SaveManager : public QObject
@@ -17,18 +17,23 @@ class SaveManager : public QObject
 public:
 	SaveManager();
 	~SaveManager();
-private:
-	void SaveTimerParameters(const QVector<ButtonFTimer_DType>& Option, QSettings& settings);
-	void LoadTimerParameters(QVector<ButtonFTimer_DType>& Option, QSettings& settings);
-	void SaveConditionsParameters(const QVector<ButtonFCondition_DType>& Option, QSettings& settings);
-	void LoadConditionsParameters(QVector<ButtonFCondition_DType>& Option, QSettings& settings);
 
-	void SaveAllOptions(
-		const QVector<ButtonFTimer_DType>& ParamTimer,
-		const QVector<ButtonFCondition_DType>& ParamCondition,
-		const QString& Path
+	void DefaultLoadOptions(
+		QVector<cTimerButton>& ParamTimer,
+		QVector<cConditionButton>& ParamCondition
 	);
 
+private:
+	static void SaveTimerParameters(const QVector<cTimerButton>& Option, QSettings& settings);
+	static void LoadTimerParameters(QVector<cTimerButton>& Option, QSettings& settings);
+	static void SaveConditionsParameters(const QVector<cConditionButton>& Option, QSettings& settings);
+	static void LoadConditionsParameters(QVector<cConditionButton>& Option, QSettings& settings);
+	static bool DecodeNameParam(qint32 num, MainWindowSignal_DType SignalType, QString& name);
+
 	QSettings BaseSettings;
+
+public slots:
+	void handleUpdateDefaultParamsFTimer(qint32 num, MainWindowSignal_DType SignalType, const QVariant& value);
+	void handleUpdateDefaultParamsFCondition(qint32 num, MainWindowSignal_DType SignalType, const QVariant& value);
 };
 

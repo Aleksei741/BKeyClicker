@@ -122,7 +122,7 @@
     <QtMoc Include="USB\USBDataWriter.h" />
     <QtMoc Include="USB\USBProcedure.h" />
     <QtMoc Include="EmulationOrchestrator.h" />
-    <ClInclude Include="ControlledEntities\cCondotoinButton.h" />
+    <ClInclude Include="ControlledEntities\cConditionButton.h" />
     <ClInclude Include="ControlledEntities\cKeyEmulator.h" />
     <ClInclude Include="ControlledEntities\cMonitorScreen.h" />
     <ClInclude Include="ControlledEntities\cTimerButton.h" />
@@ -138,7 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EmulationOrchestrator.cpp" />
-    <ClCompile Include="ControlledEntities\cCondotoinButton.cpp" />
+    <ClCompile Include="ControlledEntities\cConditionButton.cpp" />
     <ClCompile Include="ControlledEntities\cKeyEmulator.cpp" />
     <ClCompile Include="ControlledEntities\cMonitorScreen.cpp" />
     <ClCompile Include="ControlledEntities\cTimerButton.cpp" />

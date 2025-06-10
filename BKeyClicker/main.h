@@ -5,4 +5,5 @@
 #include "EmulationOrchestrator.h"
 #include "MainWindow.h"
 #include "USBProcedure.h"
+#include "SaveManager.h"
 

@@ -1,7 +1,7 @@
 //******************************************************************************
 //include
 //******************************************************************************
-#include "cCondotoinButton.h"
+#include "cConditionButton.h"
 //******************************************************************************
 // Variables
 //******************************************************************************
@@ -18,21 +18,21 @@
 //******************************************************************************
 // Class function
 //******************************************************************************
-cCondotoinButton::cCondotoinButton() :
+cConditionButton::cConditionButton() :
 	cTimerButton(ButtonFTimer_DType{false, false, false, false, nWindows_DType::n1, Buttons_DType::L0, 1000, 1, 300}),
 	pixel_position(QPoint(0, 0)),
 	color_set(Qt::black),
 	color_condition(Condition_DType::Equal)
 {}
 //------------------------------------------------------------------------------
-cCondotoinButton::cCondotoinButton(const ButtonFCondition_DType& ButtonFCondition) :
+cConditionButton::cConditionButton(const ButtonFCondition_DType& ButtonFCondition) :
 	cTimerButton(ButtonFCondition),
 	pixel_position(ButtonFCondition.pixel_position),
 	color_set(ButtonFCondition.color_set),
 	color_condition(ButtonFCondition.color_condition)
 {}
 //------------------------------------------------------------------------------
-bool cCondotoinButton::click(const qint64& time_, quint16& delay) const
+bool cConditionButton::click(const qint64& time_, quint16& delay) const
 {
 	delay = 0;
 	bool complited = true;
@@ -71,32 +71,32 @@ bool cCondotoinButton::click(const qint64& time_, quint16& delay) const
 	return complited;
 }
 //------------------------------------------------------------------------------
-void cCondotoinButton::setPixelPosition(const QPoint& position)
+void cConditionButton::setPixelPosition(const QPoint& position)
 {
 	pixel_position = position;
 }
 //------------------------------------------------------------------------------
-void cCondotoinButton::setColor(const QColor& color)
+void cConditionButton::setColor(const QColor& color)
 {
 	color_set = color;
 }
 //------------------------------------------------------------------------------
-void cCondotoinButton::setCondition(Condition_DType state)
+void cConditionButton::setCondition(Condition_DType state)
 {
 	color_condition = state;
 }
 //------------------------------------------------------------------------------
-QPoint cCondotoinButton::getPixelPosition(void) const
+QPoint cConditionButton::getPixelPosition(void) const
 {
 	return pixel_position;
 }
 //------------------------------------------------------------------------------
-QColor cCondotoinButton::getColor(void) const
+QColor cConditionButton::getColor(void) const
 {
 	return color_set;
 }
 //------------------------------------------------------------------------------
-Condition_DType cCondotoinButton::getCondition(void) const
+Condition_DType cConditionButton::getCondition(void) const
 {
 	return color_condition;
 }
