@@ -9,6 +9,9 @@
 #include <string>
 #include <utility>
 
+#include "IncludeOpenCV.h"
+#include "IncludeWindpws.h"
+
 class cMonitorScreen
 {
 private:
@@ -22,19 +25,21 @@ private:
 	void StopProcessMonitorSreen(void);
 	void processMonitorSreen(void);
 public:
-	enun ScreenStatus
+	enum class Status 
 	{
-		FOUND,
-		NOT_FOUND,
-		INVALID_WINDOW,
-		NO_INPUT_DATA,
-		NO_SCREEN_DATA,
+    SUCCESS,            // Успешный захват и обработка
+	NOT_FOUND,          // Успешный захват и обработка
+	SCREEN_EMPTY,       // Экран не считался.
+    IMAGE_EMPTY,         // Изображение пустое (не считалось)
+    PROCESSING_ERROR,    // Ошибка обработки
+    INVALIG_REGION,      // Некорректная область захвата
+	INVALIG_TARGET,      // Некорректный входной файл
 	};
 
 	cMonitorScreen();
     ~cMonitorScreen();
-	ScreenStatus GetColorPixel(std::pair<uint16_t, uint16_t>& pos, std::tuple color<uint8_t, uint8_t, uint8_t>);
-	ScreenStatus FindTargetPixelOnScreen(std::string& target_img_name, RECT RectTargetWindow, std::pair<int, int>& pos);
+	cMonitorScreen::Status GetColorPixel(const cv::Point& pos, cv::Vec3b& color)
+	cMonitorScreen::Status GetMat(cv::Mat& screenCopy);
 	
 	void WiatScreen(void);
     

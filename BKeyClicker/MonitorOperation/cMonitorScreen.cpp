@@ -257,7 +257,7 @@ void cMonitorScreen::processMonitorSreen()
 /**
  * @brief Ожидает доступности нового кадра экрана * 
  * Блокирует выполнение потока до тех пор, пока:
- * - Не будет захвачен и обработан новый кадр экрана
+ * Не будет захвачен и обработан новый кадр экрана
  * 
  */
 void cMonitorScreen::WaitScreen(void)
@@ -265,113 +265,45 @@ void cMonitorScreen::WaitScreen(void)
 	semaphoreMatrixScreen.acquire(); 
 }
 //------------------------------------------------------------------------------
-ScreenStatus GetColorPixel(std::pair<uint16_t, uint16_t>& pos, std::tuple color<uint8_t, uint8_t, uint8_t>)
+cMonitorScreen::Status GetColorPixel(const cv::Point& pos, cv::Vec3b& color)
 {
 	if (!activeMonitorSreen)
-		return NO_SCREEN_DATA;
+		return Status::PROCESSING_ERROR;
 
-    cv::Vec3b pixel(0, 0, 0);
+    color = cv::Vec3b(0, 0, 0);
 
     {
         std::lock_guard<std::mutex> lock(mutexMatrixScreen);
         if (ScreenMat.empty())
-            return NO_SCREEN_DATA;
+            return Status::SCREEN_EMPTY;
 
-        if (pos.first >= static_cast<uint16_t>(ScreenMat.cols) || 
-            pos.second >= static_cast<uint16_t>(ScreenMat.rows))
-            return INVALID_WINDOW;
+         if (pos.x < 0 || 
+            pos.y < 0 || 
+            pos.x >= ScreenMat.cols || 
+            pos.y >= ScreenMat.rows)
+            return Status::INVALIG_REGION;
 
-        pixel = ScreenMat.at<cv::Vec3b>(pos.second, pos.first);
+        color = ScreenMat.at<cv::Vec3b>(pos);
     }
-    color = std::make_tuple(pixel[2], pixel[1], pixel[0]);
-	return FOUND;
+
+	return Status::SUCCESS;
 }
 //------------------------------------------------------------------------------
-ScreenStatus FindTargetPixelOnScreen(std::string& target_img_name, RECT RectTargetWindow, std::pair<int, int>& pos)
+cMonitorScreen::Status GetMat(cv::Mat& screenCopy)
 {
-    //**************************************************************************
-    if (!activeMonitorSreen)
-		return NO_SCREEN_DATA;
-    //**************************************************************************
-	// --- Загрузка шаблона ---
-	cv::Mat targetTemplate = cv::imread(target_img_name, cv::IMREAD_COLOR);
-	if (targetTemplate.empty())
-	{		
-		return NO_INPUT_DATA;
-	}
+	if (!activeMonitorSreen)
+		return Status::PROCESSING_ERROR;
 
-    //**************************************************************************
-	// --- Захват экрана ---
-	cv::Mat screenCopy;
     {
         std::lock_guard<std::mutex> lock(mutexMatrixScreen);
         if (ScreenMat.empty())
-            return NO_SCREEN_DATA;
+        {
+            screenCopy.release();
+            return Status::SCREEN_EMPTY;
+        }
         screenCopy = ScreenMat.clone();
     }
-        
-    //**************************************************************************
-	// --- Проверка границ окна ---
-	// Расчёт ширины и высоты окна
-	int winWidth = RectTargetWindow.right - RectTargetWindow.left;
-	int winHeight = RectTargetWindow.bottom - RectTargetWindow.top;
 
-    if (winWidth <= 0 || winHeight <= 0) 
-    {
-        return INVALID_WINDOW;
-    }
-	
-    //**************************************************************************
-	// --- Вычисление ROI ---
-	// Берём видимую часть окна
-    int roiLeft = std::max(RectTargetWindow.left, 0);
-	int roiTop = std::max(RectTargetWindow.top, 0);
-	int roiRight = std::min(RectTargetWindow.right, screenCopy.cols);
-	int roiBottom = std::min(RectTargetWindow.bottom, screenCopy.rows);
-
-    if (roiRight <= roiLeft || roiBottom <= roiTop) 
-    {
-        return INVALID_WINDOW;
-    }
-	
-    //**************************************************************************
-	// Создаём ROI для поиска
-	cv::Rect searchROI(roiLeft, roiTop, roiRight - roiLeft, roiBottom - roiTop);
-	cv::Mat searchArea = screenCopy(searchROI);
-
-    //**************************************************************************
-    // --- Проверка размера шаблона ---
-	if (targetTemplate.cols > searchArea.cols || targetTemplate.rows > searchArea.rows) 
-    {
-        return TEMPLATE_TOO_LARGE;
-    }
-
-    //**************************************************************************
-	// --- Поиск шаблона ---
-	cv::Mat result;
-	cv::matchTemplate(searchArea, targetTemplate, result, cv::TM_CCOEFF_NORMED);
-
-    //**************************************************************************
-	// Находим максимум совпадения
-	double maxVal;
-	cv::Point maxLoc;
-	cv::minMaxLoc(result, nullptr, &maxVal, nullptr, &maxLoc);
-
-	// Порог схожести
-	const double threshold = 0.8;
-	if (maxVal < threshold)
-		return NOT_FOUND;
-
-    //**************************************************************************
-	// --- Расчёт координат центра ---
-    int foundX = roiLeft + maxLoc.x + targetTemplate.cols / 2;
-    int foundY = roiTop + maxLoc.y + targetTemplate.rows / 2;
-
-    if (foundX < 0 || foundY < 0 || foundX >= screenCopy.cols || foundY >= screenCopy.rows) {
-        return OUT_OF_BOUNDS;
-    }
-
-    pos = {foundX, foundY};
-    return FOUND;
+	return Status::SUCCESS;
 }
 //------------------------------------------------------------------------------
